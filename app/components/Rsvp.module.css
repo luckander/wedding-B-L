@@ -1,0 +1,436 @@
+.rsvpSection {
+  background-color: var(--cream);
+  padding: 6rem 1.5rem;
+  width: 100%;
+}
+
+.container {
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.subtitle {
+  font-family: var(--font-inter), sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--dust-blue);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.title {
+  font-family: var(--font-cormorant), serif;
+  font-size: 2.6rem;
+  color: var(--text-dark);
+}
+
+.divider {
+  width: 80px;
+  height: 1px;
+  background-color: rgba(143, 164, 139, 0.3);
+  margin: 0.8rem auto 1.2rem;
+}
+
+.headerText {
+  max-width: 500px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.rsvpCard {
+  position: relative;
+  background: var(--white);
+  border: var(--border-light);
+  box-shadow: var(--shadow-soft);
+  border-radius: var(--radius-lg);
+  padding: 4rem 3rem;
+  width: 100%;
+}
+
+/* Search Form */
+.searchForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.searchLabel {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.searchContainer {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 0.8rem 1.2rem;
+  font-size: 0.95rem;
+  border: 1px solid rgba(162, 181, 205, 0.4);
+  border-radius: var(--radius-md);
+  background-color: var(--cream);
+  color: var(--text-dark);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: var(--sage);
+  background-color: var(--white);
+  box-shadow: 0 0 0 3px var(--sage-light);
+}
+
+.searchBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.6rem;
+  background-color: var(--sage);
+  color: var(--white);
+  border: 1px solid var(--sage);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.searchBtn:hover {
+  background-color: var(--sage-hover);
+  border-color: var(--sage-hover);
+  transform: translateY(-1px);
+}
+
+.notFound {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #c97d7d;
+  font-size: 0.85rem;
+  background-color: rgba(201, 125, 125, 0.08);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(201, 125, 125, 0.15);
+  margin-top: 0.5rem;
+}
+
+/* Confirmation Form */
+.rsvpConfirmForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.groupTitle {
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.8rem;
+  color: var(--sage);
+  margin-bottom: 0.2rem;
+}
+
+.groupInstructions {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.guestsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.guestItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.2rem;
+  background-color: var(--cream);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(162, 181, 205, 0.15);
+  gap: 1rem;
+}
+
+.guestNameContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.userIcon {
+  color: var(--dust-blue);
+}
+
+.guestName {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+/* Custom Switch Toggle styling */
+.switchLabel {
+  cursor: pointer;
+  user-select: none;
+}
+
+.hiddenCheckbox {
+  display: none;
+}
+
+.customSwitch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 140px;
+  height: 38px;
+  background-color: rgba(201, 125, 125, 0.12); /* Non-attending base bg */
+  border-radius: var(--radius-full);
+  padding: 3px;
+  transition: all var(--transition-normal);
+  border: 1px solid rgba(201, 125, 125, 0.2);
+}
+
+.customSwitch.active {
+  background-color: var(--sage-light);
+  border-color: rgba(143, 164, 139, 0.3);
+}
+
+.switchKnob {
+  width: 32px;
+  height: 32px;
+  background-color: #c97d7d;
+  border-radius: 50%;
+  position: absolute;
+  left: 3px;
+  transition: all var(--transition-normal);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.active .switchKnob {
+  left: calc(100% - 35px);
+  background-color: var(--sage);
+}
+
+.switchText {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: absolute;
+  width: calc(100% - 40px);
+  text-align: center;
+  transition: all var(--transition-normal);
+  color: #c59393;
+}
+
+.active .switchText {
+  color: var(--sage);
+  left: 10px;
+}
+
+.customSwitch:not(.active) .switchText {
+  right: 10px;
+}
+
+/* Other inputs */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputLabel {
+  font-size: 0.88rem;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.textInput, .textareaInput {
+  padding: 0.8rem 1rem;
+  font-size: 0.92rem;
+  border: 1px solid rgba(162, 181, 205, 0.4);
+  border-radius: var(--radius-md);
+  background-color: var(--cream);
+  color: var(--text-dark);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.textInput:focus, .textareaInput:focus {
+  border-color: var(--sage);
+  background-color: var(--white);
+  box-shadow: 0 0 0 3px var(--sage-light);
+}
+
+.textareaInput {
+  resize: vertical;
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #c97d7d;
+  font-size: 0.85rem;
+}
+
+.formActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.backBtn {
+  font-family: var(--font-inter), sans-serif;
+  padding: 0.8rem 1.4rem;
+  background-color: transparent;
+  color: var(--text-muted);
+  border: 1px solid rgba(162, 181, 205, 0.4);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.backBtn:hover {
+  background-color: var(--cream);
+  color: var(--text-dark);
+}
+
+.submitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.8rem;
+  background-color: var(--sage);
+  color: var(--white);
+  border: 1px solid var(--sage);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(143, 164, 139, 0.15);
+}
+
+.submitBtn:hover {
+  background-color: var(--sage-hover);
+  border-color: var(--sage-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(143, 164, 139, 0.25);
+}
+
+/* Success View */
+.successScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem 0;
+}
+
+.heartIconCircle {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: var(--dusty-pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 24px rgba(212, 165, 165, 0.35);
+  animation: float 4s ease-in-out infinite;
+}
+
+.heartIcon {
+  color: var(--white);
+}
+
+.successTitle {
+  font-family: var(--font-cormorant), serif;
+  font-size: 2.2rem;
+  color: var(--sage);
+  margin-bottom: 0.8rem;
+}
+
+.successText {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 500px;
+  margin-bottom: 2rem;
+}
+
+.resetBtn {
+  font-family: var(--font-inter), sans-serif;
+  padding: 0.8rem 1.8rem;
+  background-color: transparent;
+  color: var(--text-dark);
+  border: 1px solid var(--dust-blue);
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.resetBtn:hover {
+  background-color: var(--dust-blue-light);
+  transform: translateY(-1px);
+}
+
+/* Responsiveness */
+@media (max-width: 640px) {
+  .rsvpCard {
+    padding: 3rem 1.5rem 2.5rem;
+  }
+
+  .searchContainer {
+    flex-direction: column;
+  }
+
+  .searchBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .guestItem {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .customSwitch {
+    width: 100%;
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+  }
+
+  .backBtn, .submitBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .title {
+    font-size: 2.2rem;
+  }
+}

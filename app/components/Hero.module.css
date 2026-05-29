@@ -1,0 +1,207 @@
+.heroSection {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 1.5rem;
+  overflow: hidden;
+  background-color: var(--cream);
+}
+
+.backgroundOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("/images/hero_watercolor.png");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.15;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.invitationCard {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(143, 164, 139, 0.15);
+  box-shadow: 0 16px 48px rgba(162, 181, 205, 0.12);
+  border-radius: var(--radius-lg);
+  padding: 4.5rem 3rem 4rem;
+  text-align: center;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.verseContainer {
+  margin-bottom: 2rem;
+  max-width: 480px;
+}
+
+.verseText {
+  font-family: var(--font-cormorant), serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.namesContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.namesContainer h1 {
+  font-size: 4.5rem;
+  line-height: 1;
+  font-weight: 400;
+  color: var(--sage);
+  margin: 0;
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
+}
+
+.ampersand {
+  font-family: var(--font-cormorant), serif;
+  font-style: italic;
+  font-size: 2.2rem;
+  color: var(--dusty-pink);
+  margin: 0.2rem 0;
+  font-weight: 300;
+}
+
+.invitationCall {
+  font-family: var(--font-cormorant), serif;
+  font-size: 1.15rem;
+  color: var(--text-dark);
+  margin-bottom: 2.5rem;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+.detailsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 480px;
+  border-top: 1px dashed rgba(162, 181, 205, 0.3);
+  border-bottom: 1px dashed rgba(162, 181, 205, 0.3);
+  padding: 1.5rem 0;
+  margin-bottom: 2rem;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: var(--text-dark);
+}
+
+.detailIcon {
+  color: var(--dust-blue);
+  flex-shrink: 0;
+}
+
+.detailText {
+  font-size: 0.95rem;
+  font-family: var(--font-inter), sans-serif;
+  line-height: 1.4;
+}
+
+.detailText strong {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.primaryBtn, .secondaryBtn {
+  font-family: var(--font-inter), sans-serif;
+  padding: 0.8rem 1.8rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.primaryBtn {
+  background-color: var(--sage);
+  color: var(--white);
+  border: 1px solid var(--sage);
+  box-shadow: 0 4px 14px rgba(143, 164, 139, 0.2);
+}
+
+.primaryBtn:hover {
+  background-color: var(--sage-hover);
+  border-color: var(--sage-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(143, 164, 139, 0.3);
+}
+
+.secondaryBtn {
+  background-color: transparent;
+  color: var(--text-dark);
+  border: 1px solid var(--dust-blue);
+}
+
+.secondaryBtn:hover {
+  background-color: var(--dust-blue-light);
+  transform: translateY(-2px);
+}
+
+/* Responsiveness */
+@media (max-width: 640px) {
+  .invitationCard {
+    padding: 3rem 1.5rem 2.5rem;
+  }
+  
+  .namesContainer h1 {
+    font-size: 3.5rem;
+  }
+  
+  .ampersand {
+    font-size: 1.8rem;
+  }
+  
+  .detailsGrid {
+    padding: 1.2rem 0;
+  }
+
+  .detailText {
+    font-size: 0.88rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .primaryBtn, .secondaryBtn {
+    width: 100%;
+  }
+}

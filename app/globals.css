@@ -1,0 +1,166 @@
+:root {
+  /* Color Palette */
+  --cream: #FBF9F6;
+  --dust-blue: #A2B5CD;
+  --dust-blue-light: rgba(162, 181, 205, 0.15);
+  --dust-blue-hover: #8FA4BF;
+  --sage: #8FA48B;
+  --sage-light: rgba(143, 164, 139, 0.12);
+  --sage-hover: #7E947A;
+  --dusty-pink: #D4A5A5;
+  --dusty-pink-light: rgba(212, 165, 165, 0.15);
+  --dusty-pink-hover: #C59393;
+  --text-dark: #3D3D3D;
+  --text-muted: #6E6E6E;
+  --white: #FFFFFF;
+  --overlay-bg: rgba(251, 249, 246, 0.85);
+
+  /* Borders & Shadows */
+  --border-light: 1px solid rgba(162, 181, 205, 0.25);
+  --border-sage: 1px solid rgba(143, 164, 139, 0.25);
+  --shadow-soft: 0 12px 40px rgba(162, 181, 205, 0.1);
+  --shadow-hover: 0 20px 48px rgba(162, 181, 205, 0.18);
+  --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.03);
+
+  /* Border Radii */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-slow: 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Base resets & styles */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  background-color: var(--cream);
+  color: var(--text-dark);
+  font-family: var(--font-inter), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Typography styles using CSS custom properties */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-cormorant), serif;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+p, span, input, button, textarea, label {
+  font-family: var(--font-inter), sans-serif;
+}
+
+.font-dancing {
+  font-family: var(--font-dancing), cursive;
+}
+
+.font-great-vibes {
+  font-family: var(--font-great-vibes), cursive;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--dust-blue);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dust-blue-hover);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Utility Animations classes */
+.animate-fade-in {
+  animation: fadeIn 1.2s var(--transition-slow) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 1s var(--transition-slow) forwards;
+}
+
+.delay-1 {
+  animation-delay: 0.2s;
+}
+
+.delay-2 {
+  animation-delay: 0.4s;
+}
+
+.delay-3 {
+  animation-delay: 0.6s;
+}
+
+.delay-4 {
+  animation-delay: 0.8s;
+}
+
+/* Scroll reveal utility classes (used in combination with JS) */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
