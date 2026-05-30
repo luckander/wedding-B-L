@@ -5,6 +5,11 @@ export const metadata = {
   description:
     "Convidamos voce para celebrar conosco o casamento de Bheatriz e Lucas em 13 de setembro de 2026.",
   keywords: "casamento, Bheatriz e Lucas, RSVP, lista de presentes",
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({ children }) {
