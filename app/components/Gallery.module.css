@@ -43,7 +43,7 @@
 
 .line {
   height: 1px;
-  background-color: rgba(162, 181, 205, 0.3);
+  background-color: rgba(143, 169, 196, 0.3);
   flex: 1;
 }
 
@@ -65,7 +65,7 @@
   content: "";
   position: absolute;
   width: 1px;
-  background-color: rgba(143, 164, 139, 0.25);
+  background-color: rgba(111, 142, 174, 0.25);
   top: 0;
   bottom: 0;
   left: 50%;
@@ -220,7 +220,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(143, 164, 139, 0.4);
+  background-color: rgba(111, 142, 174, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;

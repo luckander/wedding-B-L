@@ -36,7 +36,7 @@
 .divider {
   width: 80px;
   height: 1px;
-  background-color: rgba(143, 164, 139, 0.3);
+  background-color: rgba(111, 142, 174, 0.3);
   margin: 0.8rem auto 1.2rem;
 }
 
@@ -79,7 +79,7 @@
   flex: 1;
   padding: 0.8rem 1.2rem;
   font-size: 0.95rem;
-  border: 1px solid rgba(162, 181, 205, 0.4);
+  border: 1px solid rgba(143, 169, 196, 0.4);
   border-radius: var(--radius-md);
   background-color: var(--cream);
   color: var(--text-dark);
@@ -127,6 +127,16 @@
   margin-top: 0.5rem;
 }
 
+.testHint {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  background: rgba(143, 169, 196, 0.12);
+  border: 1px dashed rgba(111, 142, 174, 0.22);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.85rem;
+}
+
 /* Confirmation Form */
 .rsvpConfirmForm {
   display: flex;
@@ -160,7 +170,7 @@
   padding: 1rem 1.2rem;
   background-color: var(--cream);
   border-radius: var(--radius-md);
-  border: 1px solid rgba(162, 181, 205, 0.15);
+  border: 1px solid rgba(143, 169, 196, 0.15);
   gap: 1rem;
 }
 
@@ -205,7 +215,7 @@
 
 .customSwitch.active {
   background-color: var(--sage-light);
-  border-color: rgba(143, 164, 139, 0.3);
+  border-color: rgba(111, 142, 174, 0.3);
 }
 
 .switchKnob {
@@ -261,7 +271,7 @@
 .textInput, .textareaInput {
   padding: 0.8rem 1rem;
   font-size: 0.92rem;
-  border: 1px solid rgba(162, 181, 205, 0.4);
+  border: 1px solid rgba(143, 169, 196, 0.4);
   border-radius: var(--radius-md);
   background-color: var(--cream);
   color: var(--text-dark);
@@ -299,7 +309,7 @@
   padding: 0.8rem 1.4rem;
   background-color: transparent;
   color: var(--text-muted);
-  border: 1px solid rgba(162, 181, 205, 0.4);
+  border: 1px solid rgba(143, 169, 196, 0.4);
   border-radius: var(--radius-md);
   font-size: 0.9rem;
   cursor: pointer;
@@ -325,14 +335,14 @@
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
-  box-shadow: 0 4px 12px rgba(143, 164, 139, 0.15);
+  box-shadow: 0 4px 12px rgba(111, 142, 174, 0.15);
 }
 
 .submitBtn:hover {
   background-color: var(--sage-hover);
   border-color: var(--sage-hover);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(143, 164, 139, 0.25);
+  box-shadow: 0 6px 18px rgba(111, 142, 174, 0.25);
 }
 
 /* Success View */

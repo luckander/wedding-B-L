@@ -1,6 +1,14 @@
-import { NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import { NextResponse } from "next/server";
+import { weddingConfig } from "../../config";
+import {
+  hasSupabaseConfig,
+  supabaseDelete,
+  supabaseInsert,
+  supabaseSelect,
+  supabaseUpdate,
+} from "../../lib/supabaseServer";
 
 const messagesFilePath = path.join(process.cwd(), "data", "messages.json");
 
@@ -10,20 +18,30 @@ export async function GET(request) {
     const isAdmin = searchParams.get("admin") === "true";
     const password = searchParams.get("password");
 
+    if (hasSupabaseConfig()) {
+      const allMessages = await supabaseSelect("messages", { orderBy: "created_at" });
+
+      if (isAdmin && password === weddingConfig.admin.password) {
+        return NextResponse.json(allMessages);
+      }
+
+      return NextResponse.json(allMessages.filter((message) => message.approved));
+    }
+
     const data = await fs.readFile(messagesFilePath, "utf8");
     const allMessages = JSON.parse(data);
 
-    if (isAdmin && password === "casamento2026") {
+    if (isAdmin && password === weddingConfig.admin.password) {
       return NextResponse.json(allMessages);
     }
 
-    // Standard public fetch: return only approved messages, sorted by newest
     const approvedMessages = allMessages
-      .filter((m) => m.approved)
+      .filter((message) => message.approved)
       .sort((a, b) => new Date(b.date) - new Date(a.date));
 
     return NextResponse.json(approvedMessages);
   } catch (error) {
+    console.error("Error loading messages:", error);
     return NextResponse.json({ error: "Erro ao carregar os recados." }, { status: 500 });
   }
 }
@@ -34,78 +52,97 @@ export async function POST(request) {
     const { name, message } = body;
 
     if (!name || !message) {
-      return NextResponse.json({ error: "Nome e mensagem são obrigatórios." }, { status: 400 });
+      return NextResponse.json({ error: "Nome e mensagem sao obrigatorios." }, { status: 400 });
+    }
+
+    if (hasSupabaseConfig()) {
+      const newMessage = await supabaseInsert("messages", {
+        name: name.trim(),
+        message: message.trim(),
+        approved: false,
+      });
+
+      return NextResponse.json({ success: true, message: newMessage });
     }
 
     let messages = [];
     try {
       const data = await fs.readFile(messagesFilePath, "utf8");
       messages = JSON.parse(data);
-    } catch (e) {}
+    } catch {}
 
-    const newMsg = {
+    const newMessage = {
       id: `msg-${Date.now()}`,
       name: name.trim(),
       message: message.trim(),
       date: new Date().toISOString(),
-      approved: false, // Default is pending moderation
+      approved: false,
     };
 
-    messages.push(newMsg);
+    messages.push(newMessage);
     await fs.writeFile(messagesFilePath, JSON.stringify(messages, null, 2), "utf8");
 
-    return NextResponse.json({ success: true, message: newMsg });
+    return NextResponse.json({ success: true, message: newMessage });
   } catch (error) {
+    console.error("Error saving message:", error);
     return NextResponse.json({ error: "Erro ao salvar o recado." }, { status: 500 });
   }
 }
 
-// For approval / moderation from the admin panel
 export async function PUT(request) {
   try {
     const body = await request.json();
     const { id, approved, password } = body;
 
-    if (password !== "casamento2026") {
-      return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    if (password !== weddingConfig.admin.password) {
+      return NextResponse.json({ error: "Nao autorizado." }, { status: 401 });
+    }
+
+    if (hasSupabaseConfig()) {
+      const message = await supabaseUpdate("messages", id, { approved: Boolean(approved) });
+      return NextResponse.json({ success: true, message });
     }
 
     const data = await fs.readFile(messagesFilePath, "utf8");
-    let messages = JSON.parse(data);
+    const messages = JSON.parse(data);
+    const messageIndex = messages.findIndex((message) => message.id === id);
 
-    const msgIndex = messages.findIndex((m) => m.id === id);
-    if (msgIndex === -1) {
-      return NextResponse.json({ error: "Mensagem não encontrada." }, { status: 404 });
+    if (messageIndex === -1) {
+      return NextResponse.json({ error: "Mensagem nao encontrada." }, { status: 404 });
     }
 
-    messages[msgIndex].approved = !!approved;
+    messages[messageIndex].approved = Boolean(approved);
     await fs.writeFile(messagesFilePath, JSON.stringify(messages, null, 2), "utf8");
 
-    return NextResponse.json({ success: true, message: messages[msgIndex] });
+    return NextResponse.json({ success: true, message: messages[messageIndex] });
   } catch (error) {
+    console.error("Error updating message:", error);
     return NextResponse.json({ error: "Erro ao atualizar o recado." }, { status: 500 });
   }
 }
 
-// For deletion from the admin panel
 export async function DELETE(request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
     const password = searchParams.get("password");
 
-    if (password !== "casamento2026") {
-      return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+    if (password !== weddingConfig.admin.password) {
+      return NextResponse.json({ error: "Nao autorizado." }, { status: 401 });
+    }
+
+    if (hasSupabaseConfig()) {
+      await supabaseDelete("messages", id);
+      return NextResponse.json({ success: true });
     }
 
     const data = await fs.readFile(messagesFilePath, "utf8");
-    let messages = JSON.parse(data);
-
-    const filteredMessages = messages.filter((m) => m.id !== id);
-    await fs.writeFile(messagesFilePath, JSON.stringify(filteredMessages, null, 2), "utf8");
+    const messages = JSON.parse(data).filter((message) => message.id !== id);
+    await fs.writeFile(messagesFilePath, JSON.stringify(messages, null, 2), "utf8");
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error("Error deleting message:", error);
     return NextResponse.json({ error: "Erro ao deletar o recado." }, { status: 500 });
   }
 }
