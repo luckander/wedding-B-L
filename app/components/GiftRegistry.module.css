@@ -601,6 +601,54 @@
 
 /* Responsiveness */
 @media (max-width: 640px) {
+  .giftsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .giftCard {
+    border-radius: var(--radius-sm);
+  }
+
+  .imageWrapper {
+    padding: 0.8rem;
+  }
+
+  .giftContent {
+    padding: 0.8rem;
+  }
+
+  .giftTitle {
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .cardFooter {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding-top: 0.6rem;
+  }
+
+  .giftPrice {
+    font-size: 1.15rem;
+    text-align: center;
+  }
+
+  .giftBtn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.5rem;
+    font-size: 0.78rem;
+  }
+  
+  .categoryTag {
+    top: 6px;
+    left: 6px;
+    font-size: 0.6rem;
+    padding: 0.15rem 0.5rem;
+  }
+
   .modalCard {
     padding: 2rem 1.5rem;
   }

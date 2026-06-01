@@ -1,43 +1,101 @@
 "use client";
 
-import { useState } from "react";
-import { AlertCircle, Check, Heart, Search, User } from "lucide-react";
-import { weddingConfig } from "../config";
+import { useState, useEffect } from "react";
+import { AlertCircle, Check, Heart, Search, User, Loader2 } from "lucide-react";
 import { CornerLeaves } from "./Decorations";
 import ScrollReveal from "./ScrollReveal";
 import styles from "./Rsvp.module.css";
 
-export default function Rsvp() {
+export default function Rsvp({ inviteSlug }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [foundGroup, setFoundGroup] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedGuests, setSelectedGuests] = useState({});
+  const [guestIds, setGuestIds] = useState({});
   const [allergies, setAllergies] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingSlug, setIsLoadingSlug] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
 
-  const handleSearch = (event) => {
+  // Carrega convidados do slug dinâmico na montagem do componente
+  useEffect(() => {
+    if (inviteSlug) {
+      setIsLoadingSlug(true);
+      fetch(`/api/rsvp/search?slug=${encodeURIComponent(inviteSlug)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.found) {
+            const members = data.members.map((m) => m.name);
+            setFoundGroup({ groupName: data.family.name, members });
+
+            const ids = {};
+            const selected = {};
+            let savedAllergies = "";
+            let savedMessage = "";
+
+            data.members.forEach((m) => {
+              ids[m.name] = m.id;
+              // se já respondeu, usa o salvo; senão, default para true (confirmado)
+              selected[m.name] = m.attending !== null ? m.attending : true;
+              if (m.allergies && !savedAllergies) savedAllergies = m.allergies;
+              if (m.message && !savedMessage) savedMessage = m.message;
+            });
+
+            setGuestIds(ids);
+            setSelectedGuests(selected);
+            setAllergies(savedAllergies);
+            setMessage(savedMessage);
+          }
+          setHasSearched(true);
+        })
+        .catch((err) => console.error("Erro ao buscar convite pelo slug:", err))
+        .finally(() => setIsLoadingSlug(false));
+    }
+  }, [inviteSlug]);
+
+  const handleSearch = async (event) => {
     event.preventDefault();
-    const term = searchTerm.toLowerCase().trim();
+    const term = searchTerm.trim();
     if (!term) return;
 
-    const matchedGuest = weddingConfig.guests.find(
-      (guest) =>
-        guest.group.toLowerCase().includes(term) ||
-        guest.name.toLowerCase().includes(term) ||
-        guest.companions.some((companion) => companion.toLowerCase().includes(term))
-    );
+    setIsSubmitting(true);
+    setSubmitStatus(null);
 
-    if (matchedGuest) {
-      const members = [matchedGuest.name, ...matchedGuest.companions];
-      setFoundGroup({ groupName: matchedGuest.group, members });
-      setSelectedGuests(Object.fromEntries(members.map((member) => [member, true])));
-    } else {
+    try {
+      const res = await fetch(`/api/rsvp/search?query=${encodeURIComponent(term)}`);
+      const data = await res.json();
+
+      if (data.success && data.found) {
+        const members = data.members.map((m) => m.name);
+        setFoundGroup({ groupName: data.family.name, members });
+
+        const ids = {};
+        const selected = {};
+        let savedAllergies = "";
+        let savedMessage = "";
+
+        data.members.forEach((m) => {
+          ids[m.name] = m.id;
+          selected[m.name] = m.attending !== null ? m.attending : true;
+          if (m.allergies && !savedAllergies) savedAllergies = m.allergies;
+          if (m.message && !savedMessage) savedMessage = m.message;
+        });
+
+        setGuestIds(ids);
+        setSelectedGuests(selected);
+        setAllergies(savedAllergies);
+        setMessage(savedMessage);
+      } else {
+        setFoundGroup(null);
+      }
+      setHasSearched(true);
+    } catch (error) {
+      console.error("Erro ao buscar:", error);
       setFoundGroup(null);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setHasSearched(true);
   };
 
   const handleCheckboxChange = (name) => {
@@ -58,6 +116,7 @@ export default function Rsvp() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              id: guestIds[member],
               name: member,
               groupName: foundGroup.groupName,
               attending,
@@ -80,13 +139,16 @@ export default function Rsvp() {
   };
 
   const handleReset = () => {
-    setSearchTerm("");
-    setFoundGroup(null);
-    setHasSearched(false);
-    setSelectedGuests({});
-    setAllergies("");
-    setMessage("");
     setSubmitStatus(null);
+    if (!inviteSlug) {
+      setSearchTerm("");
+      setFoundGroup(null);
+      setHasSearched(false);
+      setSelectedGuests({});
+      setGuestIds({});
+      setAllergies("");
+      setMessage("");
+    }
   };
 
   return (
@@ -98,7 +160,9 @@ export default function Rsvp() {
             <h2 className={styles.title}>RSVP</h2>
             <div className={styles.divider} />
             <p className={styles.headerText}>
-              Procure pelo nome da familia ou grupo do convite. Em seguida, marque cada membro convidado que estara presente.
+              {inviteSlug 
+                ? "Confirme a presença dos membros do seu convite marcando a caixa de cada um."
+                : "Procure pelo nome da familia ou grupo do convite. Em seguida, marque cada membro convidado que estara presente."}
             </p>
           </div>
         </ScrollReveal>
@@ -108,58 +172,63 @@ export default function Rsvp() {
             <CornerLeaves position="top-left" size={60} opacity={0.15} />
             <CornerLeaves position="bottom-right" size={60} opacity={0.15} />
 
-            {submitStatus === "success" ? (
+            {isLoadingSlug ? (
+              <div className={styles.successScreen} style={{ minHeight: "150px" }}>
+                <Loader2 className="animate-spin" size={36} color="var(--sage)" style={{ margin: "2rem auto" }} />
+                <p className={styles.successText}>Carregando seu convite...</p>
+              </div>
+            ) : submitStatus === "success" ? (
               <div className={styles.successScreen}>
                 <div className={styles.heartIconCircle}>
                   <Heart size={36} fill="var(--white)" className={styles.heartIcon} />
                 </div>
-                <h3 className={styles.successTitle}>Presenca confirmada</h3>
+                <h3 className={styles.successTitle}>Resposta Enviada</h3>
                 <p className={styles.successText}>
                   Obrigado por responder com carinho. Estamos preparando tudo para viver esse dia com as pessoas que amamos.
                 </p>
                 <button onClick={handleReset} className={styles.resetBtn}>
-                  Confirmar outro convidado
+                  {inviteSlug ? "Editar resposta" : "Confirmar outro convidado"}
                 </button>
               </div>
             ) : (
               <div className={styles.formFlow}>
                 {!foundGroup && (
-                  <form onSubmit={handleSearch} className={styles.searchForm}>
-                    <label htmlFor="search-input" className={styles.searchLabel}>
-                      Digite o nome da familia ou grupo do convite
-                    </label>
-                    <div className={styles.searchContainer}>
-                      <input
-                        id="search-input"
-                        type="text"
-                        placeholder="Ex: Familia Ferreira"
-                        value={searchTerm}
-                        onChange={(event) => setSearchTerm(event.target.value)}
-                        className={styles.searchInput}
-                        disabled={isSubmitting}
-                      />
-                      <button type="submit" className={styles.searchBtn} disabled={isSubmitting}>
-                        <Search size={18} />
-                        <span>Pesquisar</span>
-                      </button>
-                    </div>
-
-                    {hasSearched && !foundGroup && (
-                      <div className={styles.notFound}>
-                        <AlertCircle size={16} />
-                        <span>Nao encontramos esse convite. Confira a grafia ou fale com os noivos.</span>
+                  inviteSlug ? (
+                    <div style={{ textAlign: "center", padding: "1rem 0" }}>
+                      <div className={styles.heartIconCircle} style={{ margin: "0 auto 1.5rem" }}>
+                        <Heart size={36} fill="var(--white)" className={styles.heartIcon} />
                       </div>
-                    )}
-
-                    <p className={styles.testHint}>
-                      Teste com: Familia Ferreira, Familia Almeida, Amigos da Bhea, Amigos do Lucas ou Familia Ribeiro.
-                    </p>
-                  </form>
+                      <h3 style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1.8rem", color: "var(--sage)", marginBottom: "1rem" }}>
+                        Convite Não Encontrado
+                      </h3>
+                      <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", lineHeight: "1.6", maxWidth: "450px", margin: "0 auto 1.5rem" }}>
+                        Não conseguimos localizar o convite com o link informado. Por favor, verifique a grafia ou entre em contato com os noivos.
+                      </p>
+                      <p style={{ fontSize: "0.85rem", color: "var(--dust-blue)", fontStyle: "italic" }}>
+                        Dúvidas? Fale com a Bhea ou com o Lucas.
+                      </p>
+                    </div>
+                  ) : (
+                    <div style={{ textAlign: "center", padding: "1rem 0" }}>
+                      <div className={styles.heartIconCircle} style={{ margin: "0 auto 1.5rem" }}>
+                        <Heart size={36} fill="var(--white)" className={styles.heartIcon} />
+                      </div>
+                      <h3 style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1.8rem", color: "var(--sage)", marginBottom: "1rem" }}>
+                        Acesso Restrito
+                      </h3>
+                      <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", lineHeight: "1.6", maxWidth: "450px", margin: "0 auto 1.5rem" }}>
+                        Para confirmar sua presença, utilize o link personalizado que enviamos para você.
+                      </p>
+                      <p style={{ fontSize: "0.85rem", color: "var(--dust-blue)", fontStyle: "italic" }}>
+                        Por favor, use o link do seu convite ou entre em contato com os noivos.
+                      </p>
+                    </div>
+                  )
                 )}
 
                 {foundGroup && (
                   <form onSubmit={handleSubmit} className={styles.rsvpConfirmForm}>
-                    <h3 className={styles.groupTitle}>Ola, {foundGroup.groupName}</h3>
+                    <h3 className={styles.groupTitle}>Olá, {foundGroup.groupName}</h3>
                     <p className={styles.groupInstructions}>
                       Marque abaixo quem ira participar da celebracao.
                     </p>
@@ -226,10 +295,17 @@ export default function Rsvp() {
                     )}
 
                     <div className={styles.formActions}>
-                      <button type="button" onClick={handleReset} className={styles.backBtn} disabled={isSubmitting}>
-                        Voltar
-                      </button>
-                      <button type="submit" className={styles.submitBtn} disabled={isSubmitting}>
+                      {!inviteSlug && (
+                        <button type="button" onClick={handleReset} className={styles.backBtn} disabled={isSubmitting}>
+                          Voltar
+                        </button>
+                      )}
+                      <button 
+                        type="submit" 
+                        className={styles.submitBtn} 
+                        disabled={isSubmitting}
+                        style={{ marginLeft: inviteSlug ? "auto" : "0" }}
+                      >
                         {isSubmitting ? (
                           "Enviando..."
                         ) : (

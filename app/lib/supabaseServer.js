@@ -5,10 +5,16 @@ export function hasSupabaseConfig() {
   return Boolean(supabaseUrl && serviceRoleKey);
 }
 
-export async function supabaseSelect(table, { orderBy, ascending = false } = {}) {
+export async function supabaseSelect(table, { orderBy, ascending = false, select = "*", filters = {} } = {}) {
   const url = new URL(`${supabaseUrl}/rest/v1/${table}`);
-  url.searchParams.set("select", "*");
+  url.searchParams.set("select", select);
   if (orderBy) url.searchParams.set("order", `${orderBy}.${ascending ? "asc" : "desc"}`);
+
+  for (const [key, value] of Object.entries(filters)) {
+    if (value !== undefined && value !== null) {
+      url.searchParams.set(key, value);
+    }
+  }
 
   const response = await fetch(url, {
     headers: getHeaders(),

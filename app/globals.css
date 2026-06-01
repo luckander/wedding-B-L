@@ -1,10 +1,10 @@
-@import "./local-fonts.css";
+/* Fontes injetadas via next/font/google no layout.js */
 
 :root {
-  --font-cormorant: "Cormorant Garamond";
-  --font-inter: "Inter";
-  --font-great-vibes: "Great Vibes";
-  --font-dancing: "Dancing Script";
+  /* --font-cormorant: "Cormorant Garamond"; */
+  /* --font-inter: "Inter"; */
+  /* --font-great-vibes: "Great Vibes"; */
+  /* --font-dancing: "Dancing Script"; */
 
   /* Color Palette */
   --cream: #EEF5FA;

@@ -8,6 +8,10 @@ import styles from "./GiftRegistry.module.css";
 
 export default function GiftRegistry() {
   const { gifts, payment } = weddingConfig;
+  
+  // Ordena os presentes com base na prioridade atribuída no código
+  const sortedGifts = [...gifts].sort((a, b) => (a.priority || 999) - (b.priority || 999));
+
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [selectedGift, setSelectedGift] = useState(null);
   const [donorName, setDonorName] = useState("");
@@ -20,12 +24,12 @@ export default function GiftRegistry() {
   // NOVO ESTADO: Quantidade de cotas selecionadas pelo convidado
   const [giftQuantity, setGiftQuantity] = useState(1);
 
-  const [visibleCount, setVisibleCount] = useState(8);
+  const [visibleCount, setVisibleCount] = useState(5);
 
-  const categories = ["Todos", ...new Set(gifts.map((gift) => gift.category))];
+  const categories = ["Todos", ...new Set(sortedGifts.map((gift) => gift.category))];
   
   const filteredGifts =
-    selectedCategory === "Todos" ? gifts : gifts.filter((gift) => gift.category === selectedCategory);
+    selectedCategory === "Todos" ? sortedGifts : sortedGifts.filter((gift) => gift.category === selectedCategory);
 
   const displayedGifts = filteredGifts.slice(0, visibleCount);
 
@@ -37,11 +41,11 @@ export default function GiftRegistry() {
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
-    setVisibleCount(8);
+    setVisibleCount(5);
   };
 
   const handleLoadMore = () => {
-    setVisibleCount((prevCount) => prevCount + 8);
+    setVisibleCount((prevCount) => prevCount + 5);
   };
 
   const handleCopyPix = async () => {
