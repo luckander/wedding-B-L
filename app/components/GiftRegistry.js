@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, ExternalLink, Gift, Heart, X } from "lucide-react";
+import { Check, Copy, ExternalLink, Gift, Heart, Minus, Plus, X } from "lucide-react";
 import { weddingConfig } from "../config";
 import ScrollReveal from "./ScrollReveal";
 import styles from "./GiftRegistry.module.css";
@@ -17,9 +17,32 @@ export default function GiftRegistry() {
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
   const [contributionSuccess, setContributionSuccess] = useState(false);
 
+  // NOVO ESTADO: Quantidade de cotas selecionadas pelo convidado
+  const [giftQuantity, setGiftQuantity] = useState(1);
+
+  const [visibleCount, setVisibleCount] = useState(8);
+
   const categories = ["Todos", ...new Set(gifts.map((gift) => gift.category))];
+  
   const filteredGifts =
     selectedCategory === "Todos" ? gifts : gifts.filter((gift) => gift.category === selectedCategory);
+
+  const displayedGifts = filteredGifts.slice(0, visibleCount);
+
+  // Identifica se o item atual funciona como Cota (ex: se o nome contiver "Cota")
+  const isCotaItem = selectedGift?.title.toLowerCase().includes("cota");
+  
+  // Calcula o preço final dinamicamente com base na quantidade
+  const finalPrice = selectedGift ? selectedGift.price * giftQuantity : 0;
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+    setVisibleCount(8);
+  };
+
+  const handleLoadMore = () => {
+    setVisibleCount((prevCount) => prevCount + 8);
+  };
 
   const handleCopyPix = async () => {
     await navigator.clipboard.writeText(payment.pixKey);
@@ -29,17 +52,35 @@ export default function GiftRegistry() {
 
   const handleOpenModal = (gift) => {
     setSelectedGift(gift);
+    setGiftQuantity(1); // Reseta a quantidade para 1 sempre que abrir um novo presente
     setDonorName("");
     setDonorMessage("");
     setContributionSuccess(false);
     setCopiedPix(false);
   };
 
+  // Funções para o controle do seletor de cotas
+  const incrementQuantity = () => setGiftQuantity((prev) => prev + 1);
+  const decrementQuantity = () => setGiftQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  const handleQuantityChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+    if (!isNaN(value) && value > 0) {
+      setGiftQuantity(value);
+    } else if (e.target.value === "") {
+      setGiftQuantity(""); // permite que o usuário apague para digitar
+    }
+  };
+
   const handleConfirmGift = async (event) => {
     event.preventDefault();
-    if (!donorName.trim()) return;
+    if (!donorName.trim() || !giftQuantity) return;
 
     setIsSubmitting(true);
+
+    // Ajusta o texto do título para salvar com a quantidade de cotas
+    const titleWithQuantity = isCotaItem 
+      ? `${selectedGift.title} (${giftQuantity}x cotas)`
+      : selectedGift.title;
 
     try {
       const response = await fetch("/api/gifts", {
@@ -47,10 +88,10 @@ export default function GiftRegistry() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           giftId: selectedGift.id,
-          giftTitle: selectedGift.title,
+          giftTitle: titleWithQuantity,
           donorName,
           message: donorMessage,
-          amount: selectedGift.price,
+          amount: finalPrice, // ENVIA O VALOR MULTIPLICADO
           paymentMethod: "Pix ou Mercado Pago",
         }),
       });
@@ -61,7 +102,7 @@ export default function GiftRegistry() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: donorName,
-            message: `Presenteou com "${selectedGift.title}": ${donorMessage}`,
+            message: `Presenteou com "${titleWithQuantity}": ${donorMessage}`,
           }),
         });
       }
@@ -75,17 +116,21 @@ export default function GiftRegistry() {
   };
 
   const handleMercadoPagoCheckout = async () => {
-    if (!donorName.trim()) return;
+    if (!donorName.trim() || !giftQuantity) return;
 
     setIsCreatingCheckout(true);
+
+    const titleWithQuantity = isCotaItem 
+      ? `${selectedGift.title} (${giftQuantity}x cotas)`
+      : selectedGift.title;
 
     try {
       const response = await fetch("/api/payments/mercado-pago", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: selectedGift.title,
-          amount: selectedGift.price,
+          title: titleWithQuantity,
+          amount: finalPrice, // MERCADO PAGO RECEBE O VALOR MULTIPLICADO
           donorName,
         }),
       });
@@ -105,10 +150,10 @@ export default function GiftRegistry() {
         <ScrollReveal>
           <div className={styles.sectionHeader}>
             <span className={styles.subtitle}>Lista de casamento</span>
-            <h2 className={styles.title}>Presentes simbolicos</h2>
+            <h2 className={styles.title}>Presentes simbólicos</h2>
             <div className={styles.divider} />
             <p className={styles.headerText}>
-              Escolha uma cota, registre seu nome e finalize pelo Pix ou pelo link do Mercado Pago. A lista esta pronta para voce trocar, remover ou adicionar presentes depois.
+              Escolha um item da nossa casa para nos presentear. Você poderá finalizar o gesto através de Pix ou pelo Mercado Pago.
             </p>
           </div>
         </ScrollReveal>
@@ -119,7 +164,7 @@ export default function GiftRegistry() {
               <button
                 key={category}
                 className={`${styles.tabBtn} ${selectedCategory === category ? styles.activeTab : ""}`}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => handleCategoryChange(category)}
               >
                 {category}
               </button>
@@ -128,8 +173,8 @@ export default function GiftRegistry() {
         </ScrollReveal>
 
         <div className={styles.giftsGrid}>
-          {filteredGifts.map((gift, index) => (
-            <ScrollReveal key={gift.id} delay={index * 50}>
+          {displayedGifts.map((gift, index) => (
+            <ScrollReveal key={gift.id} delay={index * 30}>
               <div className={styles.giftCard}>
                 <div className={styles.imageWrapper}>
                   <img src={gift.image} alt={gift.title} className={styles.giftImg} />
@@ -137,13 +182,13 @@ export default function GiftRegistry() {
                 </div>
                 <div className={styles.giftContent}>
                   <h3 className={styles.giftTitle}>{gift.title}</h3>
-                  <p className={styles.giftDesc}>{gift.description}</p>
                   <div className={styles.cardFooter}>
                     <span className={styles.giftPrice}>
+                      {gift.title.toLowerCase().includes("cota") ? "Cota: " : ""}
                       R$ {gift.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                     </span>
                     <button onClick={() => handleOpenModal(gift)} className={styles.giftBtn}>
-                      <Gift size={16} />
+                      <Gift size={15} />
                       <span>Presentear</span>
                     </button>
                   </div>
@@ -152,6 +197,16 @@ export default function GiftRegistry() {
             </ScrollReveal>
           ))}
         </div>
+
+        {filteredGifts.length > visibleCount && (
+          <ScrollReveal>
+            <div className={styles.loadMoreContainer}>
+              <button onClick={handleLoadMore} className={styles.loadMoreBtn}>
+                Ver mais presentes
+              </button>
+            </div>
+          </ScrollReveal>
+        )}
 
         {selectedGift && (
           <div className={styles.modalBackdrop}>
@@ -165,11 +220,40 @@ export default function GiftRegistry() {
                   <div className={styles.modalHeader}>
                     <Gift size={28} className={styles.modalIcon} />
                     <h3 className={styles.modalTitle}>Presentear Bheatriz e Lucas</h3>
+                    
+                    {/* SUBTÍTULO MODIFICADO PARA MOSTRAR O TOTAL DINÂMICO */}
                     <p className={styles.modalSubtitle}>
-                      Voce selecionou <strong>{selectedGift.title}</strong> por R${" "}
-                      {selectedGift.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      Você selecionou <strong>{selectedGift.title}</strong> por{" "}
+                      <strong>
+                        R$ {finalPrice.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                      </strong>
                     </p>
                   </div>
+
+                  {/* ALERTA E SELETOR DE COTAS CONDICIONAL */}
+                  {isCotaItem && (
+                    <div className={styles.cotaWrapper}>
+                      <p className={styles.cotaAlert}>
+                        ✨ Este item é uma cota. Você pode presentear com quantas cotas desejar!
+                      </p>
+                      <div className={styles.cotaSelector}>
+                        <button type="button" onClick={decrementQuantity} className={styles.qtyBtn}>
+                          <Minus size={14} />
+                        </button>
+                        <input
+                          type="number"
+                          value={giftQuantity}
+                          onChange={handleQuantityChange}
+                          onBlur={() => { if (!giftQuantity) setGiftQuantity(1); }}
+                          className={styles.qtyInput}
+                          min="1"
+                        />
+                        <button type="button" onClick={incrementQuantity} className={styles.qtyBtn}>
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   <form onSubmit={handleConfirmGift} className={styles.modalForm}>
                     <div className={styles.formGroup}>
@@ -180,7 +264,7 @@ export default function GiftRegistry() {
                         id="donor-name"
                         type="text"
                         required
-                        placeholder="Como os noivos vao identificar o presente"
+                        placeholder="Como os noivos vão identificar o presente"
                         value={donorName}
                         onChange={(event) => setDonorName(event.target.value)}
                         className={styles.textInput}
@@ -208,7 +292,7 @@ export default function GiftRegistry() {
 
                       <div className={styles.pixBlock}>
                         <p className={styles.paymentDesc}>
-                          Copie a chave Pix e pague o valor da cota no aplicativo do seu banco.
+                          Copie a chave Pix e pague o valor total de <strong>R$ {finalPrice.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</strong> no app do seu banco.
                         </p>
                         <div className={styles.pixKeyBox}>
                           <span className={styles.pixKeyText}>{payment.pixKey}</span>
@@ -218,12 +302,8 @@ export default function GiftRegistry() {
                           </button>
                         </div>
                         <div className={styles.pixDetails}>
-                          <span>
-                            Favorecido: <strong>{payment.pixHolder}</strong>
-                          </span>
-                          <span>
-                            Banco: <strong>{payment.bank}</strong>
-                          </span>
+                          <span>Favorecido: <strong>{payment.pixHolder}</strong></span>
+                          <span>Banco: <strong>{payment.bank}</strong></span>
                         </div>
                       </div>
 
@@ -236,9 +316,9 @@ export default function GiftRegistry() {
                           type="button"
                           className={styles.mpBtn}
                           onClick={handleMercadoPagoCheckout}
-                          disabled={!donorName.trim() || isCreatingCheckout}
+                          disabled={!donorName.trim() || isCreatingCheckout || !giftQuantity}
                         >
-                          <span>{isCreatingCheckout ? "Criando checkout..." : "Pagar pelo Mercado Pago"}</span>
+                          <span>{isCreatingCheckout ? "Criando checkout..." : `Pagar R$ ${finalPrice.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} pelo Mercado Pago`}</span>
                           <ExternalLink size={16} />
                         </button>
                         <span className={styles.mpNote}>Depois do pagamento, clique em confirmar presente.</span>
@@ -249,7 +329,7 @@ export default function GiftRegistry() {
                       <button type="button" onClick={() => setSelectedGift(null)} className={styles.cancelBtn} disabled={isSubmitting}>
                         Cancelar
                       </button>
-                      <button type="submit" className={styles.confirmBtn} disabled={isSubmitting || !donorName.trim()}>
+                      <button type="submit" className={styles.confirmBtn} disabled={isSubmitting || !donorName.trim() || !giftQuantity}>
                         {isSubmitting ? "Registrando..." : "Confirmar presente"}
                       </button>
                     </div>
@@ -260,12 +340,12 @@ export default function GiftRegistry() {
                   <div className={styles.successCircle}>
                     <Heart size={36} fill="var(--white)" className={styles.heartLogo} />
                   </div>
-                  <h3 className={styles.successTitle}>Muito obrigado</h3>
+                  <h3 className={styles.successTitle}>Muito obrigado!</h3>
                   <p className={styles.successText}>
-                    Seu presente <strong>{selectedGift.title}</strong> foi registrado.
+                    Seu presente <strong>{selectedGift.title} {isCotaItem && `(${giftQuantity}x)`}</strong> foi registrado.
                   </p>
                   <p className={styles.successSubtext}>
-                    Obrigado por fazer parte da nossa historia com tanto carinho.
+                    Obrigado por fazer parte da nossa história com tanto carinho.
                   </p>
                   <button onClick={() => setSelectedGift(null)} className={styles.closeSuccessBtn}>
                     Fechar
