@@ -23,8 +23,8 @@ export const weddingConfig = {
   },
   payment: {
     pixKey: "substitua-pela-chave-pix",
-    pixHolder: "Bheatriz e Lucas",
-    bank: "Pix",
+    pixHolder: "Adna Bheatriz de Oliveira Alencar",
+    bank: "Banco do Brasil",
     mercadoPagoLink: "https://www.mercadopago.com.br/",
   },
   admin: {
@@ -33,7 +33,7 @@ export const weddingConfig = {
   gifts: [
     {
       id: "sofa",
-      title: "Sofá Confortável",
+      title: "Cota Sofá Confortável",
       price: 1800,
       image: "/images/gifts/sofa.png",
       category: "Sala de Estar",
@@ -41,7 +41,7 @@ export const weddingConfig = {
     },
     {
       id: "geladeira",
-      title: "Geladeira Duplex",
+      title: "Cota Geladeira Duplex",
       price: 2800,
       image: "/images/gifts/geladeira.png",
       category: "Cozinha",
@@ -49,8 +49,8 @@ export const weddingConfig = {
     },
     {
       id: "cama",
-      title: "Cama Box Casal",
-      price: 1500,
+      title: "Roupa de Cama",
+      price: 300,
       image: "/images/gifts/cama.png",
       category: "Quarto",
       priority: 3,
@@ -122,7 +122,7 @@ export const weddingConfig = {
     {
       id: "liquidificador",
       title: "Liquidificador de Alta Potência",
-      price: 180,
+      price: 220,
       image: "/images/gifts/liquidificador.png",
       category: "Cozinha",
       priority: 12,
