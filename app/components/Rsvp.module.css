@@ -178,6 +178,7 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  min-width: 0;
 }
 
 .userIcon {
@@ -188,10 +189,14 @@
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--text-dark);
+  overflow-wrap: anywhere;
 }
 
 /* Custom Switch Toggle styling */
 .switchLabel {
+  display: flex;
+  width: 140px;
+  flex-shrink: 0;
   cursor: pointer;
   user-select: none;
 }
@@ -204,6 +209,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
   width: 140px;
   height: 38px;
   background-color: rgba(201, 125, 125, 0.12); /* Non-attending base bg */
@@ -242,6 +248,7 @@
   position: absolute;
   width: calc(100% - 40px);
   text-align: center;
+  white-space: nowrap;
   transition: all var(--transition-normal);
   color: #c59393;
 }
@@ -426,8 +433,17 @@
     padding: 1rem;
   }
 
+  .guestNameContainer {
+    width: 100%;
+  }
+
+  .switchLabel {
+    width: 100%;
+  }
+
   .customSwitch {
     width: 100%;
+    min-height: 42px;
   }
 
   .formActions {
