@@ -2,7 +2,6 @@
 
 import { Calendar, Clock, ExternalLink, Gift, MapPin, Shirt, Send } from "lucide-react";
 import { weddingConfig } from "../config";
-import { CornerLeaves } from "./Decorations";
 import Countdown from "./Countdown";
 import styles from "./Hero.module.css";
 
@@ -21,13 +20,22 @@ export default function Hero() {
 
   return (
     <section className={styles.heroSection}>
-      <div className={styles.backgroundOverlay} />
+      <div className={styles.videoBackgroundWrapper}>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          poster="/images/background-hero.webp"
+          className={styles.backgroundVideo}
+        >
+          <source src="/images/background-video.mp4" type="video/mp4" />
+        </video>
+        <div className={styles.backgroundOverlay} />
+      </div>
 
       <div className={`${styles.invitationCard} animate-fade-in`}>
-        <CornerLeaves position="top-left" size={96} opacity={0.22} />
-        <CornerLeaves position="top-right" size={96} opacity={0.22} />
-        <CornerLeaves position="bottom-left" size={96} opacity={0.22} />
-        <CornerLeaves position="bottom-right" size={96} opacity={0.22} />
+        <img src="/images/Frame.webp" alt="" className={styles.cardFrame} />
 
         <img src="/logo casal.png" alt="Monograma de Bheatriz e Lucas" className={styles.monogram} />
 
@@ -39,13 +47,13 @@ export default function Hero() {
         </div>
 
         <div className={`${styles.namesContainer} animate-fade-in delay-2`}>
-          <h1 className="font-great-vibes">{names.bride}</h1>
+          <h1 className="font-edwardian">{names.bride}</h1>
           <span className={styles.ampersand}>&</span>
-          <h1 className="font-great-vibes">{names.groom}</h1>
+          <h1 className="font-edwardian">{names.groom}</h1>
         </div>
 
         <p className={`${styles.invitationCall} animate-fade-in delay-3`}>
-          Com alegria, convidam voce para celebrar o amor, a fe e o comeco da vida a dois.
+          Com alegria, convidam você para celebrar o amor, a fé e o começo da vida a dois.
         </p>
 
         <div className={`${styles.detailsGrid} animate-fade-in delay-3`}>
@@ -58,7 +66,7 @@ export default function Hero() {
           <div className={styles.detailItem}>
             <Clock size={18} className={styles.detailIcon} />
             <span className={styles.detailText}>
-              Chegada as <strong>{event.arrivalTime}h</strong> | Cerimonia as <strong>{formattedTime}h</strong>
+              Chegada às <strong>{event.arrivalTime}h</strong> | Cerimônia às <strong>{formattedTime}h</strong>
             </span>
           </div>
           <div className={styles.detailItem}>
@@ -92,7 +100,7 @@ export default function Hero() {
         <div className={`${styles.actions} animate-fade-in delay-4`}>
           <a href="#rsvp" className={styles.primaryBtn}>
             <Send size={16} />
-            Confirmar presenca
+            Confirmar presença
           </a>
           <a href="#presentes" className={styles.secondaryBtn}>
             <Gift size={16} />

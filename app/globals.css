@@ -1,10 +1,24 @@
-/* Fontes injetadas via next/font/google no layout.js */
+/* Fontes injetadas via next/font/google no layout.js e fontes locais */
+
+@font-face {
+  font-family: "EdwardianScript";
+  src: url("/fonts/edwardianscriptitc.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "OldStandard";
+  src: url("/fonts/OldStandardTT-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
-  /* --font-cormorant: "Cormorant Garamond"; */
-  /* --font-inter: "Inter"; */
-  /* --font-great-vibes: "Great Vibes"; */
-  /* --font-dancing: "Dancing Script"; */
+  --font-edwardian: "EdwardianScript", cursive;
+  --font-oldstandard: "OldStandard", serif;
 
   /* Color Palette */
   --cream: #EEF5FA;
@@ -84,6 +98,14 @@ p, span, input, button, textarea, label {
 
 .font-great-vibes {
   font-family: var(--font-great-vibes), cursive;
+}
+
+.font-edwardian {
+  font-family: var(--font-edwardian);
+}
+
+.font-oldstandard {
+  font-family: var(--font-oldstandard);
 }
 
 /* Custom Scrollbar */
