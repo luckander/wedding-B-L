@@ -19,13 +19,17 @@ export async function GET(request) {
     const password = searchParams.get("password");
 
     if (hasSupabaseConfig()) {
-      const allMessages = await supabaseSelect("messages", { orderBy: "created_at" });
+      try {
+        const allMessages = await supabaseSelect("messages", { orderBy: "created_at" });
 
-      if (isAdmin && password === weddingConfig.admin.password) {
-        return NextResponse.json(allMessages);
+        if (isAdmin && password === weddingConfig.admin.password) {
+          return NextResponse.json(allMessages);
+        }
+
+        return NextResponse.json(allMessages.filter((message) => message.approved));
+      } catch (err) {
+        console.warn("Supabase fetch failed, falling back to local JSON:", err.message);
       }
-
-      return NextResponse.json(allMessages.filter((message) => message.approved));
     }
 
     const data = await fs.readFile(messagesFilePath, "utf8");
@@ -52,17 +56,21 @@ export async function POST(request) {
     const { name, message } = body;
 
     if (!name || !message) {
-      return NextResponse.json({ error: "Nome e mensagem sao obrigatorios." }, { status: 400 });
+      return NextResponse.json({ error: "Nome e mensagem são obrigatórios." }, { status: 400 });
     }
 
     if (hasSupabaseConfig()) {
-      const newMessage = await supabaseInsert("messages", {
-        name: name.trim(),
-        message: message.trim(),
-        approved: false,
-      });
+      try {
+        const newMessage = await supabaseInsert("messages", {
+          name: name.trim(),
+          message: message.trim(),
+          approved: false,
+        });
 
-      return NextResponse.json({ success: true, message: newMessage });
+        return NextResponse.json({ success: true, message: newMessage });
+      } catch (err) {
+        console.warn("Supabase insert failed, falling back to local JSON:", err.message);
+      }
     }
 
     let messages = [];
@@ -95,12 +103,16 @@ export async function PUT(request) {
     const { id, approved, password } = body;
 
     if (password !== weddingConfig.admin.password) {
-      return NextResponse.json({ error: "Nao autorizado." }, { status: 401 });
+      return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
     }
 
     if (hasSupabaseConfig()) {
-      const message = await supabaseUpdate("messages", id, { approved: Boolean(approved) });
-      return NextResponse.json({ success: true, message });
+      try {
+        const message = await supabaseUpdate("messages", id, { approved: Boolean(approved) });
+        return NextResponse.json({ success: true, message });
+      } catch (err) {
+        console.warn("Supabase update failed, falling back to local JSON:", err.message);
+      }
     }
 
     const data = await fs.readFile(messagesFilePath, "utf8");
@@ -108,7 +120,7 @@ export async function PUT(request) {
     const messageIndex = messages.findIndex((message) => message.id === id);
 
     if (messageIndex === -1) {
-      return NextResponse.json({ error: "Mensagem nao encontrada." }, { status: 404 });
+      return NextResponse.json({ error: "Mensagem não encontrada." }, { status: 404 });
     }
 
     messages[messageIndex].approved = Boolean(approved);
@@ -128,12 +140,16 @@ export async function DELETE(request) {
     const password = searchParams.get("password");
 
     if (password !== weddingConfig.admin.password) {
-      return NextResponse.json({ error: "Nao autorizado." }, { status: 401 });
+      return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
     }
 
     if (hasSupabaseConfig()) {
-      await supabaseDelete("messages", id);
-      return NextResponse.json({ success: true });
+      try {
+        await supabaseDelete("messages", id);
+        return NextResponse.json({ success: true });
+      } catch (err) {
+        console.warn("Supabase delete failed, falling back to local JSON:", err.message);
+      }
     }
 
     const data = await fs.readFile(messagesFilePath, "utf8");

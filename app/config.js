@@ -8,18 +8,16 @@ export const weddingConfig = {
   event: {
     date: "2026-09-13T14:30:00-03:00",
     arrivalTime: "14:20",
-    venueName: "Haras Por do Sol",
+    venueName: "Haras Pôr do Sol",
     venueAddress: "Cabedelo - PB",
     mapsLink: "https://www.google.com/maps/search/?api=1&query=Haras%20Por%20do%20Sol%20Cabedelo%20PB",
     wazeLink: "https://waze.com/ul?q=Haras%20Por%20do%20Sol%20Cabedelo%20PB&navigate=yes",
     dressCode: {
       type: "Esporte fino",
       description:
-        "O casamento sera a tarde, em clima de campo. Tecidos leves, tons suaves e roupas confortaveis combinam muito bem com a celebracao.",
-      prohibitedColors: ["Branco", "Off-white", "Perola", "Marfim"],
+        "O casamento será à tarde, em clima de campo. Tecidos leves, tons suaves e roupas confortáveis combinam muito bem com a celebração.",
+      prohibitedColors: ["Branco", "Off-white", "Pérola", "Marfim"],
     },
-    verse:
-      "Mas, alem de todas essas coisas, revistam-se de amor, pois e o perfeito vinculo de uniao. (Colossenses 3:14)",
   },
   payment: {
     pixKey: "substitua-pela-chave-pix",
@@ -161,7 +159,7 @@ export const weddingConfig = {
     },
     {
       id: "mixer",
-      title: "Mixer Multiúso",
+      title: "Mixer Multiuso",
       price: 130,
       image: "/images/gifts/mixer.png",
       category: "Cozinha",
@@ -188,16 +186,16 @@ export const weddingConfig = {
     {
       id: 1,
       name: "Mariana Ferreira",
-      group: "Familia Ferreira",
+      group: "Família Ferreira",
       allowedCount: 3,
-      companions: ["Joao Ferreira", "Ana Ferreira"],
+      companions: ["João Ferreira", "Ana Ferreira"],
     },
     {
       id: 2,
       name: "Carlos Almeida",
-      group: "Familia Almeida",
+      group: "Família Almeida",
       allowedCount: 4,
-      companions: ["Patricia Almeida", "Lucas Almeida", "Clara Almeida"],
+      companions: ["Patrícia Almeida", "Lucas Almeida", "Clara Almeida"],
     },
     {
       id: 3,
@@ -216,7 +214,7 @@ export const weddingConfig = {
     {
       id: 5,
       name: "Helena e Marcos Ribeiro",
-      group: "Familia Ribeiro",
+      group: "Família Ribeiro",
       allowedCount: 2,
       companions: ["Marcos Ribeiro"],
     },

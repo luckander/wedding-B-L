@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Calendar, Clock, ExternalLink, Gift, MapPin, Shirt, Send } from "lucide-react";
 import { weddingConfig } from "../config";
 import Countdown from "./Countdown";
@@ -26,22 +27,29 @@ export default function Hero() {
           loop
           muted
           playsInline
+          preload="none"
           poster="/images/background-hero.webp"
           className={styles.backgroundVideo}
         >
-          <source src="/images/background-video.mp4" type="video/mp4" />
+          <source src="/images/background-video.webm" type="video/mp4" />
         </video>
         <div className={styles.backgroundOverlay} />
       </div>
 
       <div className={`${styles.invitationCard} animate-fade-in`}>
-        <img src="/images/Frame.webp" alt="" className={styles.cardFrame} />
-
-        <img src="/logo casal.png" alt="Monograma de Bheatriz e Lucas" className={styles.monogram} />
+        <Image
+          src="/logo casal.png"
+          alt="Monograma de Bheatriz e Lucas"
+          width={150}
+          height={150}
+          priority
+          style={{ width: "auto", height: "auto" }}
+          className={styles.monogram}
+        />
 
         <div className={`${styles.verseContainer} animate-fade-in delay-1`}>
-          <p className="font-great-vibes" style={{ fontSize: "1.55rem", color: "var(--sage)", marginBottom: 4 }}>
-            Nosso convite
+          <p className="font-edwardian" style={{ fontSize: "2.15rem", color: "var(--sage)", marginBottom: 4 }}>
+            Queridos amigos,
           </p>
           <p className={styles.verseText}>{event.verse}</p>
         </div>

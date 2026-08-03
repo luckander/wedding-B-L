@@ -76,10 +76,10 @@ export default function Guestbook() {
         <ScrollReveal>
           <div className={styles.sectionHeader}>
             <span className={styles.subtitle}>Mural de recados</span>
-            <h2 className={styles.title}>Deixe seu carinho</h2>
+            <h2 className={styles.title}>Deixe sua mensagem</h2>
             <div className={styles.divider} />
             <p className={styles.headerText}>
-              As mensagens entram como pendentes e aparecem no mural depois da aprovacao dos noivos.
+              As mensagens entram como pendentes e aparecem no mural depois da aprovação dos noivos.
             </p>
           </div>
         </ScrollReveal>
@@ -130,7 +130,7 @@ export default function Guestbook() {
                 {submitError && (
                   <div className={styles.errorMessage}>
                     <AlertCircle size={16} />
-                    <span>Nao foi possivel enviar agora. Tente novamente.</span>
+                    <span>Não foi possivel enviar agora. Tente novamente.</span>
                   </div>
                 )}
 
@@ -153,13 +153,13 @@ export default function Guestbook() {
                 {isLoading ? (
                   <div className={styles.emptyFeed}>Carregando mensagens...</div>
                 ) : messages.length === 0 ? (
-                  <div className={styles.emptyFeed}>Ainda nao ha recados publicados.</div>
+                  <div className={styles.emptyFeed}>Ainda não ha recados publicados.</div>
                 ) : (
                   messages.map((msg) => (
                     <div key={msg.id} className={styles.messageItem}>
                       <div className={styles.messageHeader}>
                         <strong>{msg.name}</strong>
-                        <span>{formatDate(msg.date)}</span>
+                        <span>{formatDate(msg.created_at || msg.date)}</span>
                       </div>
                       <p>"{msg.message}"</p>
                     </div>

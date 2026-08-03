@@ -1,0 +1,311 @@
+.closedOverlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background-image: url("/images/background-envelope.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  touch-action: none;
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.closedOverlay.fadeOut {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.overlayBg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.25), rgba(220, 235, 245, 0.45));
+  pointer-events: none;
+  z-index: 0;
+}
+
+/*
+ * envelopeSection base: normal page flow (after overlay is dismissed).
+ * envelopeSectionCovering: fixed full-screen BEHIND the closedOverlay (z-index 99998 < 999999).
+ * This prevents the Hero from flashing through during the closedOverlay fade-out.
+ */
+.envelopeSection {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  overflow-x: hidden;
+  background-image: url("/images/background-envelope.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.envelopeSectionCovering {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  padding: 3rem 1.5rem;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.25), rgba(220, 235, 245, 0.45));
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Floating music button */
+.musicBtn {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 999999;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(251, 252, 253, 0.92);
+  border: 1.5px solid rgba(143, 169, 196, 0.45);
+  color: #627f9f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(91, 124, 158, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.musicBtn:hover {
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 6px 24px rgba(91, 124, 158, 0.35);
+  color: #4a6685;
+}
+
+.musicIconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.musicPulseRing {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(111, 142, 174, 0.5);
+  animation: pulseRing 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+  pointer-events: none;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
+
+.muted {
+  opacity: 0.8;
+  border-color: rgba(143, 169, 196, 0.3);
+  color: var(--text-muted);
+}
+
+/* CLOSED STATE */
+.introTextContainer {
+  z-index: 10;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  animation: softFadeIn 2.4s ease forwards;
+}
+
+.title {
+  font-family: var(--font-edwardian), "EdwardianScript", cursive;
+  font-size: 3.8rem;
+  color: #537090;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.9);
+  line-height: 1.1;
+}
+
+.subtitleContainer {
+  z-index: 10;
+  text-align: center;
+  margin-top: 1.8rem;
+  animation: softFadeIn 3s ease forwards;
+}
+
+.subtitle {
+  font-family: var(--font-oldstandard), "OldStandard", serif;
+  font-size: 1.15rem;
+  color: var(--text-dark);
+  letter-spacing: 0.08em;
+  animation: pulseOpacity 2.2s infinite ease-in-out;
+}
+
+@keyframes pulseOpacity {
+
+  0%,
+  100% {
+    opacity: 0.65;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+}
+
+.envelopeClosedWrapper {
+  position: relative;
+  animation: floatEnvelope 3.8s ease-in-out infinite;
+  z-index: 10;
+}
+
+@keyframes floatEnvelope {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.envelopeClosedImg {
+  width: min(520px, 85vw);
+  height: auto;
+  filter: drop-shadow(0 14px 28px rgba(91, 124, 158, 0.25));
+}
+
+@keyframes softFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* OPENED STATE - 3 LAYER STACK */
+.envelopeOpenedStage {
+  position: relative;
+  width: min(560px, 90vw);
+  z-index: 5;
+}
+
+.envelopeLayersWrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+/* Layer 1 - back (envelope-aberto.png) */
+.envelopeAberto {
+  position: relative;
+  width: 100%;
+  height: auto;
+  z-index: 1;
+  filter: drop-shadow(0 16px 36px rgba(91, 124, 158, 0.22));
+}
+
+/*
+ * Layer 2 — invitation-portrait.png in PORTRAIT mode
+ * Width is narrower than the envelope (65%) so the tall card
+ * can rise high above the envelope mouth without being clipped.
+ * Animation slides from inside the envelope up to reveal ~55% of
+ * the card height above the envelope top.
+ */
+.invitationCardMiddle {
+  position: absolute;
+  bottom: 30%;
+  left: 50%;
+  /* Start centered, hidden inside envelope */
+  transform: translateX(-50%);
+  /* Portrait: narrower than landscape — keeps proportions readable */
+  width: 70%;
+  height: auto;
+  z-index: 2;
+  opacity: 0;
+  clip-path: inset(0 0 24% 0);
+  filter: drop-shadow(0 12px 28px rgba(91, 124, 158, 0.28));
+}
+
+.invitationCardMiddle.animateSlide {
+  animation: slideUpInvitation 8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+}
+
+@keyframes slideUpInvitation {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(50%);
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    /* Slide up so roughly the top 55% of the portrait card shows above the envelope */
+    transform: translateX(-50%) translateY(25%);
+  }
+}
+
+/* Layer 3 - front pocket (envelope-frente.png) */
+.envelopeFrente {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  z-index: 4;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .title {
+    font-size: 3rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .envelopeSection {
+    padding: 2.5rem 1rem;
+  }
+
+  .invitationCardMiddle {
+    width: 70%;
+  }
+}

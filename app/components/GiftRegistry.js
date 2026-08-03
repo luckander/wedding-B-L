@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Check, Copy, ExternalLink, Gift, Heart, Minus, Plus, X } from "lucide-react";
 import { weddingConfig } from "../config";
 import ScrollReveal from "./ScrollReveal";
@@ -8,7 +9,7 @@ import styles from "./GiftRegistry.module.css";
 
 export default function GiftRegistry() {
   const { gifts, payment } = weddingConfig;
-  
+
   // Ordena os presentes com base na prioridade atribuída no código
   const sortedGifts = [...gifts].sort((a, b) => (a.priority || 999) - (b.priority || 999));
 
@@ -20,6 +21,7 @@ export default function GiftRegistry() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
   const [contributionSuccess, setContributionSuccess] = useState(false);
+  const [givenGiftIds, setGivenGiftIds] = useState({});
 
   // NOVO ESTADO: Quantidade de cotas selecionadas pelo convidado
   const [giftQuantity, setGiftQuantity] = useState(1);
@@ -27,7 +29,7 @@ export default function GiftRegistry() {
   const [visibleCount, setVisibleCount] = useState(5);
 
   const categories = ["Todos", ...new Set(sortedGifts.map((gift) => gift.category))];
-  
+
   const filteredGifts =
     selectedCategory === "Todos" ? sortedGifts : sortedGifts.filter((gift) => gift.category === selectedCategory);
 
@@ -35,9 +37,24 @@ export default function GiftRegistry() {
 
   // Identifica se o item atual funciona como Cota (ex: se o nome contiver "Cota")
   const isCotaItem = selectedGift?.title.toLowerCase().includes("cota");
-  
+
   // Calcula o preço final dinamicamente com base na quantidade
   const finalPrice = selectedGift ? selectedGift.price * giftQuantity : 0;
+
+  useEffect(() => {
+    async function fetchGiftStatuses() {
+      try {
+        const response = await fetch("/api/gifts", { cache: "no-store" });
+        if (!response.ok) return;
+        const data = await response.json();
+        setGivenGiftIds(data.byGiftId || {});
+      } catch (error) {
+        console.error("Error fetching gift statuses:", error);
+      }
+    }
+
+    fetchGiftStatuses();
+  }, []);
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
@@ -55,6 +72,7 @@ export default function GiftRegistry() {
   };
 
   const handleOpenModal = (gift) => {
+    if (isGiftGiven(gift)) return;
     setSelectedGift(gift);
     setGiftQuantity(1); // Reseta a quantidade para 1 sempre que abrir um novo presente
     setDonorName("");
@@ -62,6 +80,8 @@ export default function GiftRegistry() {
     setContributionSuccess(false);
     setCopiedPix(false);
   };
+
+  const isGiftGiven = (gift) => !gift.title.toLowerCase().includes("cota") && givenGiftIds[gift.id];
 
   // Funções para o controle do seletor de cotas
   const incrementQuantity = () => setGiftQuantity((prev) => prev + 1);
@@ -82,7 +102,7 @@ export default function GiftRegistry() {
     setIsSubmitting(true);
 
     // Ajusta o texto do título para salvar com a quantidade de cotas
-    const titleWithQuantity = isCotaItem 
+    const titleWithQuantity = isCotaItem
       ? `${selectedGift.title} (${giftQuantity}x cotas)`
       : selectedGift.title;
 
@@ -111,7 +131,12 @@ export default function GiftRegistry() {
         });
       }
 
-      if (response.ok) setContributionSuccess(true);
+      if (response.ok) {
+        if (!isCotaItem) {
+          setGivenGiftIds((current) => ({ ...current, [selectedGift.id]: true }));
+        }
+        setContributionSuccess(true);
+      }
     } catch (error) {
       console.error("Error processing contribution:", error);
     } finally {
@@ -124,7 +149,7 @@ export default function GiftRegistry() {
 
     setIsCreatingCheckout(true);
 
-    const titleWithQuantity = isCotaItem 
+    const titleWithQuantity = isCotaItem
       ? `${selectedGift.title} (${giftQuantity}x cotas)`
       : selectedGift.title;
 
@@ -153,7 +178,6 @@ export default function GiftRegistry() {
       <div className={styles.container}>
         <ScrollReveal>
           <div className={styles.sectionHeader}>
-            <span className={styles.subtitle}>Lista de casamento</span>
             <h2 className={styles.title}>Presentes simbólicos</h2>
             <div className={styles.divider} />
             <p className={styles.headerText}>
@@ -179,10 +203,22 @@ export default function GiftRegistry() {
         <div className={styles.giftsGrid}>
           {displayedGifts.map((gift, index) => (
             <ScrollReveal key={gift.id} delay={index * 30}>
-              <div className={styles.giftCard}>
+              <div className={`${styles.giftCard} ${isGiftGiven(gift) ? styles.giftCardGiven : ""}`}>
                 <div className={styles.imageWrapper}>
-                  <img src={gift.image} alt={gift.title} className={styles.giftImg} />
+                  <Image
+                    src={gift.image}
+                    alt={gift.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 320px"
+                    className={styles.giftImg}
+                  />
                   <span className={styles.categoryTag}>{gift.category}</span>
+                  {isGiftGiven(gift) && (
+                    <div className={styles.givenOverlay}>
+                      <Check size={24} />
+                      <span>JÃ¡ presenteado</span>
+                    </div>
+                  )}
                 </div>
                 <div className={styles.giftContent}>
                   <h3 className={styles.giftTitle}>{gift.title}</h3>
@@ -191,9 +227,13 @@ export default function GiftRegistry() {
                       {gift.title.toLowerCase().includes("cota") ? "Cota: " : ""}
                       R$ {gift.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                     </span>
-                    <button onClick={() => handleOpenModal(gift)} className={styles.giftBtn}>
+                    <button
+                      onClick={() => handleOpenModal(gift)}
+                      className={styles.giftBtn}
+                      disabled={isGiftGiven(gift)}
+                    >
                       <Gift size={15} />
-                      <span>Presentear</span>
+                      <span>{isGiftGiven(gift) ? "JÃ¡ dado" : "Presentear"}</span>
                     </button>
                   </div>
                 </div>
@@ -224,7 +264,7 @@ export default function GiftRegistry() {
                   <div className={styles.modalHeader}>
                     <Gift size={28} className={styles.modalIcon} />
                     <h3 className={styles.modalTitle}>Presentear Bheatriz e Lucas</h3>
-                    
+
                     {/* SUBTÍTULO MODIFICADO PARA MOSTRAR O TOTAL DINÂMICO */}
                     <p className={styles.modalSubtitle}>
                       Você selecionou <strong>{selectedGift.title}</strong> por{" "}

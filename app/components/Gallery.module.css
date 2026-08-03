@@ -18,7 +18,7 @@
 }
 
 .subtitle {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-oldstandard), serif;
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -28,9 +28,18 @@
 }
 
 .title {
-  font-family: var(--font-cormorant), serif;
-  font-size: 2.6rem;
+  font-family: var(--font-edwardian), "EdwardianScript", cursive;
+  font-size: 4.2rem;
   color: var(--text-dark);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.divider {
+  width: 80px;
+  height: 1px;
+  background-color: rgba(111, 142, 174, 0.3);
+  margin: 0.8rem auto 1.2rem;
 }
 
 .heartDivider {
@@ -53,71 +62,183 @@
   animation: float 3s ease-in-out infinite;
 }
 
-/* Timeline */
+/* ─────────────────────────────────────────────────
+   TIMELINE WRAPPER
+───────────────────────────────────────────────── */
+.timelineWrapper {
+  position: relative;
+  width: 100%;
+  margin: 2rem 0;
+}
+
 .timeline {
   position: relative;
-  max-width: 800px;
+  width: 100%;
   margin: 0 auto;
-  padding: 2rem 0;
 }
 
-.timeline::after {
-  content: "";
-  position: absolute;
-  width: 1px;
-  background-color: rgba(111, 142, 174, 0.25);
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  margin-left: -0.5px;
+/* ─────────────────────────────────────────────────
+   DESKTOP HORIZONTAL TIMELINE (>= 769px)
+   
+   Layout: 4 columns × 2 rows
+   
+   Row 1  │  card0  │        │  card2  │        │
+   ────────────────────────────────────── ← line (top:50%)
+   Row 2  │        │  card1  │        │  card3  │
+───────────────────────────────────────────────── */
+@media (min-width: 769px) {
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr 1fr;
+    gap: 0 1.5rem;
+    max-width: 1050px;
+    min-height: 380px;
+  }
+
+  .timeline::after {
+    content: "";
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background-color: rgba(111, 142, 174, 0.38);
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 1;
+  }
+
+  .timelineColumnCell {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .timelineItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .topItem {
+    justify-content: flex-end;
+    padding-bottom: 2.25rem;
+  }
+
+  .topItem .timelineDot {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .bottomItem {
+    justify-content: flex-start;
+    padding-top: 2.25rem;
+  }
+
+  .bottomItem .timelineDot {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .timelineContent {
+    text-align: center;
+    width: 100%;
+  }
 }
 
-.timelineItem {
-  padding: 1rem 2rem;
-  position: relative;
-  background-color: transparent;
-  width: 50%;
+/* ─────────────────────────────────────────────────
+   MOBILE VERTICAL TIMELINE (<= 768px)
+───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .timelineColumnCell {
+    display: contents;
+  }
+
+  .timeline {
+    display: block;
+    max-width: 600px;
+    padding: 2rem 0;
+    position: relative;
+    isolation: isolate;
+  }
+
+  .timeline::after {
+    content: "";
+    position: absolute;
+    width: 2px;
+    background-color: rgba(111, 142, 174, 0.25);
+    top: 0;
+    bottom: 0;
+    left: 20px;
+    z-index: 0;
+  }
+
+  .timelineItem {
+    width: 100%;
+    padding-left: 3rem;
+    padding-right: 0;
+    margin-bottom: 2rem;
+    position: relative;
+    display: block;
+    z-index: 1;
+  }
+
+  .timelineItem .timelineDot {
+    position: absolute;
+    left: 3rem;
+    top: 0;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+  }
+
+  .timelineContent {
+    text-align: left;
+  }
 }
 
+/* ─────────────────────────────────────────────────
+   SHARED TIMELINE STYLES
+───────────────────────────────────────────────── */
 .timelineDot {
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  right: -12px;
-  top: 24px;
-  background-color: var(--sage);
-  border: 4px solid var(--cream);
-  border-radius: 50%;
-  z-index: 2;
+  position: relative;
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border: 0;
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--white);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  filter: drop-shadow(0 2px 4px rgba(91, 124, 158, 0.22));
 }
 
-.right .timelineDot {
-  left: -12px;
-}
-
-.left {
-  left: 0;
-  text-align: right;
-}
-
-.right {
-  left: 50%;
-  text-align: left;
+.timelinePin {
+  position: relative;
+  z-index: 1;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }
 
 .timelineContent {
-  padding: 1.5rem;
+  width: 100%;
+  height: clamp(188px, 16vw, 205px);
   background-color: var(--white);
   position: relative;
   border-radius: var(--radius-md);
   border: var(--border-sage);
   box-shadow: var(--shadow-card);
   transition: transform var(--transition-normal);
+  z-index: 2;
+  overflow: hidden;
 }
 
 .timelineContent:hover {
@@ -125,82 +246,87 @@
   box-shadow: var(--shadow-hover);
 }
 
+.timelineImage {
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.8s ease;
+}
+
+.timelineContent:hover .timelineImage {
+  transform: scale(1.04);
+}
+
+.timelineText {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  padding: 1rem 1.15rem;
+  display: grid;
+  grid-template-rows: 1.65rem minmax(2.1rem, auto) 1fr;
+  align-content: stretch;
+  text-shadow: 0 2px 8px rgba(44, 57, 64, 0.55);
+}
+
 .timelineYear {
-  font-family: var(--font-cormorant), serif;
+  font-family: var(--font-oldstandard), serif;
   font-weight: 700;
-  font-size: 1.5rem;
-  color: var(--dusty-pink);
+  font-size: 1.4rem;
+  color: var(--text-muted);
+  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.65);
   display: block;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.2rem;
 }
 
 .timelineTitle {
-  font-family: var(--font-cormorant), serif;
-  font-size: 1.25rem;
-  color: var(--text-dark);
-  margin-bottom: 0.5rem;
+  padding-top: 1.15rem;
+  font-family: var(--font-oldstandard), serif;
+  font-size: 1.15rem;
+  color: var(--white);
+  margin-bottom: 0.4rem;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .timelineDescription {
-  font-size: 0.88rem;
-  color: var(--text-muted);
-  line-height: 1.5;
+  font-size: 0.82rem;
+  color: var(--white);
+  line-height: 1.35;
+  margin-top: 0;
 }
 
-/* Gallery Grid */
-.galleryIntro {
-  max-width: 500px;
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  margin-top: 0.5rem;
-}
-
+/* ─────────────────────────────────────────────────
+   POLAROID GALLERY GRID — Portrait (2:3 ratio)
+   Photos are 800×1200px
+───────────────────────────────────────────────── */
 .galleryGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 2.5rem;
+  gap: 2rem;
   margin-top: 3rem;
 }
 
 .galleryCard {
   background-color: var(--white);
-  border: var(--border-light);
-  border-radius: var(--radius-md);
-  padding: 1rem;
-  box-shadow: var(--shadow-card);
-  display: flex;
-  flex-direction: column;
+  border: 1px solid rgba(111, 142, 174, 0.18);
+  border-radius: 4px;
+  /* Polaroid: extra padding at bottom for the "caption strip" look */
+  padding: 0.9rem 0.9rem 2rem;
+  box-shadow: 0 10px 28px rgba(91, 124, 158, 0.12);
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .galleryCard:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-hover);
-}
-
-.spanTall {
-  grid-row: span 2;
-}
-
-.spanWide {
-  grid-column: span 2;
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 16px 36px rgba(91, 124, 158, 0.2);
 }
 
 .imageWrapper {
   position: relative;
   width: 100%;
-  border-radius: var(--radius-sm);
+  border-radius: 2px;
   overflow: hidden;
-  aspect-ratio: 4 / 3;
-}
-
-.spanTall .imageWrapper {
-  aspect-ratio: 3 / 4;
-}
-
-.spanWide .imageWrapper {
-  aspect-ratio: 16 / 9;
+  /* Portrait 2:3 ratio matching 800x1200 source images */
+  aspect-ratio: 2 / 3;
 }
 
 .galleryImg {
@@ -216,10 +342,7 @@
 
 .hoverOverlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background-color: rgba(111, 142, 174, 0.4);
   display: flex;
   justify-content: center;
@@ -234,62 +357,13 @@
   opacity: 1;
 }
 
-.imageCaption {
-  font-size: 1.5rem;
-  color: var(--text-dark);
-  text-align: center;
-  margin-top: 1rem;
-  letter-spacing: 0.02em;
-}
-
-/* Responsiveness */
-@media (max-width: 768px) {
-  .timeline::after {
-    left: 20px;
-  }
-
-  .timelineItem {
-    width: 100%;
-    padding-left: 3rem;
-    padding-right: 0;
-    text-align: left;
-  }
-
-  .left {
-    left: 0;
-  }
-
-  .right {
-    left: 0;
-  }
-
-  .timelineDot {
-    left: 8px;
-    right: auto;
-  }
-
-  .left .timelineDot {
-    left: 8px;
+@media (max-width: 640px) {
+  .title {
+    font-size: 3.6rem;
   }
 
   .galleryGrid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
-  }
-
-  .spanWide {
-    grid-column: span 1;
-  }
-
-  .spanTall {
-    grid-row: span 1;
-  }
-  
-  .imageWrapper, .spanTall .imageWrapper, .spanWide .imageWrapper {
-    aspect-ratio: 4 / 3;
-  }
-
-  .title {
-    font-size: 2.2rem;
   }
 }

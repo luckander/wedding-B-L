@@ -10,17 +10,18 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const password = searchParams.get("password");
+    const isAdmin = password === weddingConfig.admin.password;
 
-    if (password !== weddingConfig.admin.password) {
-      return NextResponse.json({ error: "Nao autorizado." }, { status: 401 });
-    }
+    let contributions = [];
 
     if (hasSupabaseConfig()) {
-      return NextResponse.json(await supabaseSelect("gift_contributions", { orderBy: "created_at" }));
+      contributions = await supabaseSelect("gift_contributions", { orderBy: "created_at" });
+      return NextResponse.json(isAdmin ? contributions : toPublicGiftStatus(contributions));
     }
 
     const data = await fs.readFile(giftsFilePath, "utf8");
-    return NextResponse.json(JSON.parse(data));
+    contributions = JSON.parse(data);
+    return NextResponse.json(isAdmin ? contributions : toPublicGiftStatus(contributions));
   } catch (error) {
     console.error("Error reading contributions:", error);
     return NextResponse.json({ error: "Erro ao ler as contribuicoes." }, { status: 500 });
@@ -76,4 +77,18 @@ export async function POST(request) {
     console.error("Error saving contribution:", error);
     return NextResponse.json({ error: "Erro ao registrar o presente." }, { status: 500 });
   }
+}
+
+function toPublicGiftStatus(contributions) {
+  const giftIds = contributions
+    .map((contribution) => contribution.gift_id || contribution.giftId)
+    .filter(Boolean);
+
+  return {
+    giftIds,
+    byGiftId: giftIds.reduce((acc, giftId) => {
+      acc[giftId] = true;
+      return acc;
+    }, {}),
+  };
 }

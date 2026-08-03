@@ -43,7 +43,7 @@ export default function Countdown() {
       <div
         style={{
           fontSize: "1.5rem",
-          fontFamily: "var(--font-cormorant), serif",
+          fontFamily: "var(--font-oldstandard), serif",
           fontStyle: "italic",
           color: "var(--sage)",
           textAlign: "center",
@@ -97,7 +97,7 @@ export default function Countdown() {
             style={{
               fontSize: "1.6rem",
               fontWeight: 500,
-              fontFamily: "var(--font-cormorant), serif",
+              fontFamily: "var(--font-oldstandard), serif",
               color: "var(--text-dark)",
               lineHeight: 1.1,
             }}

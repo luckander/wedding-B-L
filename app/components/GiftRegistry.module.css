@@ -18,7 +18,7 @@
 }
 
 .subtitle {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-oldstandard), serif;
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -28,9 +28,11 @@
 }
 
 .title {
-  font-family: var(--font-cormorant), serif;
-  font-size: 2.6rem;
+  font-family: var(--font-edwardian), "EdwardianScript", cursive;
+  font-size: 4.2rem;
   color: var(--text-dark);
+  font-weight: 400;
+  line-height: 1;
 }
 
 .divider {
@@ -56,7 +58,7 @@
 }
 
 .tabBtn {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-oldstandard), serif;
   padding: 0.6rem 1.6rem;
   background-color: var(--white);
   color: var(--text-dark);
@@ -109,6 +111,14 @@
   box-shadow: var(--shadow-hover);
 }
 
+.giftCardGiven {
+  opacity: 0.92;
+}
+
+.giftCardGiven:hover {
+  transform: none;
+}
+
 .imageWrapper {
   position: relative;
   width: 100%;
@@ -153,6 +163,22 @@
   border: 1px solid rgba(111, 142, 174, 0.2);
 }
 
+.givenOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: rgba(38, 49, 58, 0.46);
+  color: var(--white);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
 .giftContent {
   padding: 1.5rem;
   display: flex;
@@ -161,7 +187,7 @@
 }
 
 .giftTitle {
-  font-family: var(--font-cormorant), serif;
+  font-family: var(--font-oldstandard), serif;
   font-size: 1.35rem;
   font-weight: 600;
   color: var(--text-dark);
@@ -186,7 +212,7 @@
 }
 
 .giftPrice {
-  font-family: var(--font-cormorant), serif;
+  font-family: var(--font-oldstandard), serif;
   font-weight: 700;
   font-size: 1.4rem;
   color: var(--text-dark);
@@ -212,6 +238,12 @@
   color: var(--white);
   border-color: var(--sage);
   transform: translateY(-1px);
+}
+
+.giftBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* Modal Styling */
@@ -293,7 +325,7 @@
 }
 
 .modalTitle {
-  font-family: var(--font-cormorant), serif;
+  font-family: var(--font-oldstandard), serif;
   font-size: 2rem;
   color: var(--text-dark);
 }
@@ -351,7 +383,7 @@
 }
 
 .paymentTitle {
-  font-family: var(--font-cormorant), serif;
+  font-family: var(--font-oldstandard), serif;
   font-size: 1.2rem;
   font-weight: 600;
   color: var(--text-dark);
@@ -378,7 +410,7 @@
 
 .pixKeyText {
   flex: 1;
-  font-family: monospace;
+  font-family: var(--font-oldstandard), serif;
   font-size: 0.82rem;
   color: var(--text-dark);
   word-break: break-all;
@@ -488,7 +520,7 @@
 }
 
 .cancelBtn {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-oldstandard), serif;
   padding: 0.7rem 1.4rem;
   background-color: transparent;
   color: var(--text-muted);
@@ -505,7 +537,7 @@
 }
 
 .confirmBtn {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-oldstandard), serif;
   padding: 0.7rem 1.6rem;
   background-color: var(--sage);
   color: var(--white);
@@ -557,7 +589,7 @@
 }
 
 .successTitle {
-  font-family: var(--font-cormorant), serif;
+  font-family: var(--font-oldstandard), serif;
   font-size: 2rem;
   color: var(--sage);
   margin-bottom: 0.6rem;
@@ -580,7 +612,7 @@
 }
 
 .closeSuccessBtn {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-oldstandard), serif;
   padding: 0.8rem 1.8rem;
   background-color: var(--sage);
   color: var(--white);
@@ -685,7 +717,7 @@
   }
 
   .title {
-    font-size: 2.2rem;
+    font-size: 3.6rem;
   }
 }
 /* Container do Botão Ver Mais */
@@ -696,7 +728,7 @@
 }
 
 .loadMoreBtn {
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-oldstandard), serif;
   padding: 0.8rem 2.5rem;
   background-color: transparent;
   color: var(--text-dark);
@@ -725,7 +757,7 @@
 }
 
 .giftTitle {
-  font-family: var(--font-cormorant), serif;
+  font-family: var(--font-oldstandard), serif;
   font-size: 1.4rem;
   font-weight: 600;
   color: var(--text-dark);
@@ -784,7 +816,7 @@
   border: none;
   width: 50px;
   text-align: center;
-  font-family: var(--font-inter), sans-serif;
+  font-family: var(--font-oldstandard), serif;
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-dark);

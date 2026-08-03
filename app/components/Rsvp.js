@@ -156,13 +156,12 @@ export default function Rsvp({ inviteSlug }) {
       <div className={styles.container}>
         <ScrollReveal>
           <div className={styles.sectionHeader}>
-            <span className={styles.subtitle}>Confirmacao de presenca</span>
-            <h2 className={styles.title}>RSVP</h2>
+            <h2 className={styles.title}>Rsvp</h2>
             <div className={styles.divider} />
             <p className={styles.headerText}>
-              {inviteSlug 
+              {inviteSlug
                 ? "Confirme a presença dos membros do seu convite marcando a caixa de cada um."
-                : "Procure pelo nome da familia ou grupo do convite. Em seguida, marque cada membro convidado que estara presente."}
+                : "Procure pelo nome da familia ou grupo do convite. Em seguida, marque cada membro convidado que estará presente."}
             </p>
           </div>
         </ScrollReveal>
@@ -198,7 +197,7 @@ export default function Rsvp({ inviteSlug }) {
                       <div className={styles.heartIconCircle} style={{ margin: "0 auto 1.5rem" }}>
                         <Heart size={36} fill="var(--white)" className={styles.heartIcon} />
                       </div>
-                      <h3 style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1.8rem", color: "var(--sage)", marginBottom: "1rem" }}>
+                      <h3 style={{ fontFamily: "var(--font-oldstandard), serif", fontSize: "1.8rem", color: "var(--sage)", marginBottom: "1rem" }}>
                         Convite Não Encontrado
                       </h3>
                       <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", lineHeight: "1.6", maxWidth: "450px", margin: "0 auto 1.5rem" }}>
@@ -213,7 +212,7 @@ export default function Rsvp({ inviteSlug }) {
                       <div className={styles.heartIconCircle} style={{ margin: "0 auto 1.5rem" }}>
                         <Heart size={36} fill="var(--white)" className={styles.heartIcon} />
                       </div>
-                      <h3 style={{ fontFamily: "var(--font-cormorant), serif", fontSize: "1.8rem", color: "var(--sage)", marginBottom: "1rem" }}>
+                      <h3 style={{ fontFamily: "var(--font-oldstandard), serif", fontSize: "1.8rem", color: "var(--sage)", marginBottom: "1rem" }}>
                         Acesso Restrito
                       </h3>
                       <p style={{ color: "var(--text-muted)", fontSize: "0.95rem", lineHeight: "1.6", maxWidth: "450px", margin: "0 auto 1.5rem" }}>
@@ -251,7 +250,7 @@ export default function Rsvp({ inviteSlug }) {
                             <div className={`${styles.customSwitch} ${selectedGuests[member] ? styles.active : ""}`}>
                               <span className={styles.switchKnob} />
                               <span className={styles.switchText}>
-                                {selectedGuests[member] ? "Confirmado" : "Nao irei"}
+                                {selectedGuests[member] ? "Confirmado" : "Não irei"}
                               </span>
                             </div>
                           </label>
@@ -300,9 +299,9 @@ export default function Rsvp({ inviteSlug }) {
                           Voltar
                         </button>
                       )}
-                      <button 
-                        type="submit" 
-                        className={styles.submitBtn} 
+                      <button
+                        type="submit"
+                        className={styles.submitBtn}
                         disabled={isSubmitting}
                         style={{ marginLeft: inviteSlug ? "auto" : "0" }}
                       >

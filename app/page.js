@@ -1,20 +1,21 @@
+import EnvelopeIntro from "./components/EnvelopeIntro";
 import Hero from "./components/Hero";
+import ClipboardTransition from "./components/ClipboardTransition";
 import Gallery from "./components/Gallery";
-import Rsvp from "./components/Rsvp";
 import GiftRegistry from "./components/GiftRegistry";
+import Rsvp from "./components/Rsvp";
 import Guestbook from "./components/Guestbook";
-import { FlowerDivider } from "./components/Decorations";
 import styles from "./page.module.css";
 
 export default function Home() {
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} intro-boot-page`}>
+      <EnvelopeIntro />
       <Hero />
+      <ClipboardTransition />
       <Gallery />
-      <FlowerDivider className={styles.sectionDivider} />
-      <Rsvp />
-      <FlowerDivider className={styles.sectionDivider} />
       <GiftRegistry />
+      <Rsvp />
       <Guestbook />
     </main>
   );

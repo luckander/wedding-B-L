@@ -1,9 +1,9 @@
 import Hero from "../components/Hero";
+import ClipboardTransition from "../components/ClipboardTransition";
 import Gallery from "../components/Gallery";
-import Rsvp from "../components/Rsvp";
 import GiftRegistry from "../components/GiftRegistry";
+import Rsvp from "../components/Rsvp";
 import Guestbook from "../components/Guestbook";
-import { FlowerDivider } from "../components/Decorations";
 import styles from "../page.module.css";
 
 export default async function InvitePage({ params }) {
@@ -12,12 +12,12 @@ export default async function InvitePage({ params }) {
   return (
     <main className={styles.page}>
       <Hero />
+      <ClipboardTransition />
       <Gallery />
-      <FlowerDivider className={styles.sectionDivider} />
-      <Rsvp inviteSlug={slug} />
-      <FlowerDivider className={styles.sectionDivider} />
       <GiftRegistry />
+      <Rsvp inviteSlug={slug} />
       <Guestbook />
     </main>
   );
 }
+

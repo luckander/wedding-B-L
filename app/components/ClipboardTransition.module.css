@@ -1,0 +1,71 @@
+.transitionSection {
+  position: relative;
+  width: 100%;
+  padding: 4rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("/images/background-envelope.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.25), rgba(220, 235, 245, 0.45));
+  pointer-events: none;
+  z-index: 0;
+}
+
+.clipboardReveal {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.clipboardReveal:global(.active) .clipboardContainer {
+  animation: clipboardFadeInUp 1s var(--transition-slow) both;
+}
+
+.clipboardContainer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 720px;
+  width: 100%;
+  opacity: 0;
+}
+
+.clipboardImg {
+  width: min(680px, 85vw);
+  height: auto;
+  filter: drop-shadow(0 14px 28px rgba(91, 124, 158, 0.22));
+  transition: transform 0.4s ease;
+}
+
+.clipboardImg:hover {
+  transform: translateY(-4px);
+}
+
+@keyframes clipboardFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .transitionSection {
+    padding: 2.5rem 1rem;
+  }
+}
