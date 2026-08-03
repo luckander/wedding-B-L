@@ -31,6 +31,9 @@ export default function RootLayout({ children }) {
       lang="pt-BR"
       className={`${edwardianScript.variable} ${oldStandard.variable}`}
     >
+      <head>
+        <link rel="preload" as="image" href="/images/dress-code.jpg" />
+      </head>
       <body>{children}</body>
     </html>
   );

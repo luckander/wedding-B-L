@@ -35,8 +35,10 @@ export default function GiftRegistry() {
 
   const displayedGifts = filteredGifts.slice(0, visibleCount);
 
+  const isCotaGift = (gift) => Boolean(gift?.isCota || gift?.title.toLowerCase().includes("cota"));
+
   // Identifica se o item atual funciona como Cota (ex: se o nome contiver "Cota")
-  const isCotaItem = selectedGift?.title.toLowerCase().includes("cota");
+  const isCotaItem = selectedGift ? isCotaGift(selectedGift) : false;
 
   // Calcula o preço final dinamicamente com base na quantidade
   const finalPrice = selectedGift ? selectedGift.price * giftQuantity : 0;
@@ -81,7 +83,7 @@ export default function GiftRegistry() {
     setCopiedPix(false);
   };
 
-  const isGiftGiven = (gift) => !gift.title.toLowerCase().includes("cota") && givenGiftIds[gift.id];
+  const isGiftGiven = (gift) => !isCotaGift(gift) && givenGiftIds[gift.id];
 
   // Funções para o controle do seletor de cotas
   const incrementQuantity = () => setGiftQuantity((prev) => prev + 1);
@@ -224,7 +226,7 @@ export default function GiftRegistry() {
                   <h3 className={styles.giftTitle}>{gift.title}</h3>
                   <div className={styles.cardFooter}>
                     <span className={styles.giftPrice}>
-                      {gift.title.toLowerCase().includes("cota") ? "Cota: " : ""}
+                      {isCotaGift(gift) ? "Cota: " : ""}
                       R$ {gift.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                     </span>
                     <button

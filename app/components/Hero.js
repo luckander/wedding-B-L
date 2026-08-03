@@ -1,13 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
-import { Calendar, Clock, ExternalLink, Gift, MapPin, Shirt, Send } from "lucide-react";
+import { Calendar, Clock, ExternalLink, Gift, MapPin, Shirt, Send, X } from "lucide-react";
 import { weddingConfig } from "../config";
 import Countdown from "./Countdown";
 import styles from "./Hero.module.css";
 
 export default function Hero() {
   const { names, event } = weddingConfig;
+  const [isDressCodeOpen, setIsDressCodeOpen] = useState(false);
   const weddingDate = new Date(event.date);
   const formattedDate = weddingDate.toLocaleDateString("pt-BR", {
     day: "numeric",
@@ -98,6 +100,13 @@ export default function Hero() {
             <span className={styles.detailText}>
               Traje: <strong>{event.dressCode.type}</strong>
             </span>
+            <button
+              type="button"
+              className={styles.dressCodeBtn}
+              onClick={() => setIsDressCodeOpen(true)}
+            >
+              Saber mais
+            </button>
           </div>
         </div>
 
@@ -116,6 +125,48 @@ export default function Hero() {
           </a>
         </div>
       </div>
+
+      {isDressCodeOpen && (
+        <div className={styles.dressCodeBackdrop} onClick={() => setIsDressCodeOpen(false)}>
+          <div className={styles.dressCodePopover} onClick={(event) => event.stopPropagation()}>
+            <button
+              type="button"
+              className={styles.dressCodeClose}
+              onClick={() => setIsDressCodeOpen(false)}
+              aria-label="Fechar informacoes de traje"
+            >
+              <X size={18} />
+            </button>
+            <div className={styles.dressCodeImage}>
+              <Image
+                src="/images/dress-code.jpg"
+                alt="Referencia visual de traje esporte fino"
+                fill
+                sizes="(max-width: 640px) 86vw, 320px"
+                unoptimized
+              />
+            </div>
+            <div className={styles.dressCodeContent}>
+              <h2>Traje esporte fino</h2>
+              <p>
+                Desejamos que aproveitem a festa de forma elegante e leve, por isso, sugerimos para as mulheres vestidos leves, midi/longos ou macacões elegantes.
+              </p>
+              <p>
+                Já para os homens, sugerimos blazer, camisa social e calça de alfaiataria ou sarja, sem necessidade de terno completo.
+              </p>
+              <p>
+                Também gostaríamos de sugerir sapatos adequados para grama, pois a cerimônia é em local aberto.
+              </p>
+              <p>
+                Por fim, reservamos os tons de branco e off-white exclusivamente para a noiva.
+              </p>
+              <button type="button" className={styles.dressCodeConfirm} onClick={() => setIsDressCodeOpen(false)}>
+                Entendi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

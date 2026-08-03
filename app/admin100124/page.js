@@ -6,6 +6,8 @@ import styles from "./page.module.css";
 
 export default function AdminMessagesPage() {
   const [messages, setMessages] = useState([]);
+  const [rsvps, setRsvps] = useState([]);
+  const [giftContributions, setGiftContributions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState("");
@@ -20,18 +22,42 @@ export default function AdminMessagesPage() {
     [messages]
   );
 
+  const attendingRsvps = useMemo(
+    () => rsvps.filter((rsvp) => rsvp.attending),
+    [rsvps]
+  );
+
+  const declinedRsvps = useMemo(
+    () => rsvps.filter((rsvp) => !rsvp.attending),
+    [rsvps]
+  );
+
   useEffect(() => {
-    fetchMessages();
+    fetchAdminData();
   }, []);
 
-  async function fetchMessages() {
+  async function fetchAdminData() {
     setIsLoading(true);
     setError("");
 
     try {
-      const response = await fetch("/api/admin100124/messages", { cache: "no-store" });
-      if (!response.ok) throw new Error("Nao foi possivel carregar os recados.");
-      setMessages(await response.json());
+      const [messagesResponse, summaryResponse] = await Promise.all([
+        fetch("/api/admin100124/messages", { cache: "no-store" }),
+        fetch("/api/admin100124/summary", { cache: "no-store" }),
+      ]);
+
+      if (!messagesResponse.ok || !summaryResponse.ok) {
+        throw new Error("Nao foi possivel carregar o admin.");
+      }
+
+      const [messagesData, summaryData] = await Promise.all([
+        messagesResponse.json(),
+        summaryResponse.json(),
+      ]);
+
+      setMessages(messagesData);
+      setRsvps(summaryData.rsvps || []);
+      setGiftContributions(summaryData.giftContributions || []);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -87,10 +113,10 @@ export default function AdminMessagesPage() {
         <div>
           <span className={styles.kicker}>Admin</span>
           <h1>Recados do casamento</h1>
-          <p>Aprove os recados para que aparecam no mural publico.</p>
+          <p>Aprove recados, acompanhe RSVPs e confira presentes registrados.</p>
         </div>
 
-        <button onClick={fetchMessages} className={styles.refreshBtn} disabled={isLoading}>
+        <button onClick={fetchAdminData} className={styles.refreshBtn} disabled={isLoading}>
           {isLoading ? <Loader2 size={16} className={styles.spin} /> : <RefreshCw size={16} />}
           <span>Atualizar</span>
         </button>
@@ -107,12 +133,28 @@ export default function AdminMessagesPage() {
           <strong>{approvedMessages.length}</strong>
           <span>Aprovados</span>
         </div>
+        <div>
+          <strong>{attendingRsvps.length}</strong>
+          <span>Confirmaram presença</span>
+        </div>
+        <div>
+          <strong>{declinedRsvps.length}</strong>
+          <span>Não virão</span>
+        </div>
+        <div>
+          <strong>{giftContributions.length}</strong>
+          <span>Presentes registrados</span>
+        </div>
       </section>
 
       {isLoading ? (
         <div className={styles.emptyState}>Carregando recados...</div>
       ) : (
         <>
+          <RsvpSection title="Confirmaram presença" emptyText="Nenhuma confirmação positiva ainda." rsvps={attendingRsvps} />
+          <RsvpSection title="Confirmaram que não virão" emptyText="Nenhuma recusa registrada." rsvps={declinedRsvps} />
+          <GiftSection contributions={giftContributions} />
+
           <MessageSection
             title="Pendentes"
             emptyText="Nenhum recado pendente."
@@ -135,6 +177,60 @@ export default function AdminMessagesPage() {
         </>
       )}
     </main>
+  );
+}
+
+function RsvpSection({ title, emptyText, rsvps }) {
+  return (
+    <section className={styles.messageSection}>
+      <h2>{title}</h2>
+
+      {rsvps.length === 0 ? (
+        <div className={styles.emptyState}>{emptyText}</div>
+      ) : (
+        <div className={styles.messageGrid}>
+          {rsvps.map((rsvp) => (
+            <article key={rsvp.id || rsvp.name} className={styles.messageCard}>
+              <div className={styles.messageMeta}>
+                <strong>{rsvp.name || rsvp.guest_name}</strong>
+                <span>{formatDate(rsvp.created_at || rsvp.date)}</span>
+              </div>
+              {(rsvp.groupName || rsvp.group_name) && <p>Grupo: {rsvp.groupName || rsvp.group_name}</p>}
+              {rsvp.attending && <p>Quantidade: {rsvp.guestsCount || rsvp.guests_count || 1}</p>}
+              {rsvp.allergies && <p>Observações alimentares: {rsvp.allergies}</p>}
+              {rsvp.message && <p>Mensagem: {rsvp.message}</p>}
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function GiftSection({ contributions }) {
+  return (
+    <section className={styles.messageSection}>
+      <h2>Presentes registrados</h2>
+
+      {contributions.length === 0 ? (
+        <div className={styles.emptyState}>Nenhum presente registrado ainda.</div>
+      ) : (
+        <div className={styles.messageGrid}>
+          {contributions.map((contribution) => (
+            <article key={contribution.id} className={styles.messageCard}>
+              <div className={styles.messageMeta}>
+                <strong>{contribution.gift_title || contribution.giftTitle}</strong>
+                <span>{formatDate(contribution.created_at || contribution.date)}</span>
+              </div>
+              <p>Dado por: {contribution.donor_name || contribution.donorName}</p>
+              <p>Valor: {formatCurrency(contribution.amount)}</p>
+              <p>Status: {contribution.payment_status || contribution.paymentStatus || "pending"}</p>
+              {contribution.message && <p>Mensagem: {contribution.message}</p>}
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -191,6 +287,13 @@ function MessageSection({ title, emptyText, messages, busyId, onApprove, onHide,
       )}
     </section>
   );
+}
+
+function formatCurrency(value) {
+  return Number(value || 0).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 }
 
 function formatDate(value) {
