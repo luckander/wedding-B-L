@@ -6,8 +6,54 @@ import { Check, Copy, ExternalLink, Gift, Heart, Minus, Plus, X } from "lucide-r
 import { weddingConfig } from "../config";
 import ScrollReveal from "./ScrollReveal";
 import styles from "./GiftRegistry.module.css";
-import { payload } from "pix-payload";
 import { useParams } from "next/navigation";
+
+// ---------------------------------------------------------------------------
+// PIX Payload Generator (BACEN spec, CRC-16/CCITT-FALSE)
+// ---------------------------------------------------------------------------
+function crc16(payload) {
+  let crc = 0xffff;
+  for (let i = 0; i < payload.length; i++) {
+    crc ^= payload.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) {
+      crc = crc & 0x8000 ? (crc << 1) ^ 0x1021 : crc << 1;
+    }
+  }
+  return (crc & 0xffff).toString(16).toUpperCase().padStart(4, "0");
+}
+
+function tlv(id, value) {
+  const len = String(value.length).padStart(2, "0");
+  return `${id}${len}${value}`;
+}
+
+function generatePixPayload({ key, name, city, amount, transactionId = "***" }) {
+  // Merchant Account Information (ID 26)
+  const mai = tlv("00", "BR.GOV.BCB.PIX") + tlv("01", key);
+  const merchantAccountInfo = tlv("26", mai);
+
+  // Additional Data (ID 62) — transactionId inside field 05
+  const txId = transactionId.replace(/[^A-Za-z0-9]/g, "").slice(0, 25) || "***";
+  const additionalData = tlv("62", tlv("05", txId));
+
+  // Amount formatted as "0.00" string
+  const amountStr = Number(amount).toFixed(2);
+
+  // Build payload (without CRC)
+  let payload =
+    tlv("00", "01") +           // Payload Format Indicator
+    merchantAccountInfo +
+    tlv("52", "0000") +          // Merchant Category Code
+    tlv("53", "986") +           // Transaction Currency (BRL)
+    tlv("54", amountStr) +       // Transaction Amount
+    tlv("58", "BR") +            // Country Code
+    tlv("59", name.slice(0, 25)) + // Merchant Name
+    tlv("60", city.slice(0, 15)) + // Merchant City
+    additionalData +
+    "6304";                       // CRC placeholder
+
+  return payload + crc16(payload);
+}
 
 export default function GiftRegistry() {
   const { gifts, payment } = weddingConfig;
@@ -82,12 +128,12 @@ export default function GiftRegistry() {
 
   const handleCopyPix = async () => {
     try {
-      const pixCode = payload({
-        key: "ebaa1212-1747-459e-b390-acc3d0a582dd",
-        name: "Adna Bheatriz Alencar", // max 25 chars
+      const pixCode = generatePixPayload({
+        key: payment.pixKey,
+        name: payment.pixHolder,
         city: "ALHANDRA",
         amount: finalPrice,
-        transactionId: "PresenteCasamento", // no spaces allowed
+        transactionId: "PresenteCasamento",
       });
 
       await navigator.clipboard.writeText(pixCode);
@@ -108,6 +154,13 @@ export default function GiftRegistry() {
     setDonorMessage("");
     setContributionSuccess(false);
     setCopiedPix(false);
+    // Lock body scroll while modal is open
+    document.body.style.overflow = "hidden";
+  };
+
+  const handleCloseModal = () => {
+    setSelectedGift(null);
+    document.body.style.overflow = "";
   };
 
   const isGiftGiven = (gift) => !isCotaGift(gift) && givenGiftIds[gift.id];
@@ -283,9 +336,9 @@ export default function GiftRegistry() {
         )}
 
         {selectedGift && (
-          <div className={styles.modalBackdrop}>
+          <div className={styles.modalBackdrop} onClick={(e) => { if (e.target === e.currentTarget) handleCloseModal(); }}>
             <div className={styles.modalCard}>
-              <button onClick={() => setSelectedGift(null)} className={styles.closeBtn} aria-label="Fechar">
+              <button onClick={handleCloseModal} className={styles.closeBtn} aria-label="Fechar">
                 <X size={20} />
               </button>
 
@@ -400,7 +453,7 @@ export default function GiftRegistry() {
                     </div>
 
                     <div className={styles.modalActions}>
-                      <button type="button" onClick={() => setSelectedGift(null)} className={styles.cancelBtn} disabled={isSubmitting}>
+                      <button type="button" onClick={handleCloseModal} className={styles.cancelBtn} disabled={isSubmitting}>
                         Cancelar
                       </button>
                       <button type="submit" className={styles.confirmBtn} disabled={isSubmitting || !donorName.trim() || !giftQuantity}>
@@ -421,7 +474,7 @@ export default function GiftRegistry() {
                   <p className={styles.successSubtext}>
                     Obrigado por fazer parte da nossa história com tanto carinho.
                   </p>
-                  <button onClick={() => setSelectedGift(null)} className={styles.closeSuccessBtn}>
+                  <button onClick={handleCloseModal} className={styles.closeSuccessBtn}>
                     Fechar
                   </button>
                 </div>
