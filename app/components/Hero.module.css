@@ -191,10 +191,10 @@
   align-items: center;
   justify-content: center;
   padding: 0.34rem 0.8rem;
-  border: 1px solid rgba(111, 142, 174, 0.28);
+  border: 1px solid rgba(212, 165, 165, 0.55);
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.66);
-  color: #627f9f;
+  background: rgba(212, 165, 165, 0.12);
+  color: #b87070;
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
@@ -202,7 +202,8 @@
 }
 
 .dressCodeBtn:hover {
-  background: var(--white);
+  background: rgba(212, 165, 165, 0.22);
+  border-color: rgba(212, 165, 165, 0.8);
   transform: translateY(-1px);
 }
 

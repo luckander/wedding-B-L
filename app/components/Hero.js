@@ -98,15 +98,16 @@ export default function Hero() {
           <div className={styles.detailItem}>
             <Shirt size={18} className={styles.detailIcon} />
             <span className={styles.detailText}>
-              Traje: <strong>{event.dressCode.type}</strong>
+              Traje:{" "}
+              <button
+                type="button"
+                className={styles.dressCodeBtn}
+                onClick={() => setIsDressCodeOpen(true)}
+                style={{ marginLeft: "0.4rem", verticalAlign: "middle" }}
+              >
+                Saber mais
+              </button>
             </span>
-            <button
-              type="button"
-              className={styles.dressCodeBtn}
-              onClick={() => setIsDressCodeOpen(true)}
-            >
-              Saber mais
-            </button>
           </div>
         </div>
 

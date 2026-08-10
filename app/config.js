@@ -20,7 +20,7 @@ export const weddingConfig = {
     },
   },
   payment: {
-    pixKey: "substitua-pela-chave-pix",
+    pixKey: "ebaa1212-1747-459e-b390-acc3d0a582dd",
     pixHolder: "Adna Bheatriz de Oliveira Alencar",
     bank: "Banco do Brasil",
     mercadoPagoLink: "https://www.mercadopago.com.br/",

@@ -10,21 +10,21 @@ export default function Gallery() {
     {
       year: "2022",
       title: "O encontro",
-      image: "/images/story-1.png",
+      image: "/images/story-1(v2).png",
       description:
         "Só podia ser jogando vôlei. Não que um deles tenha ido muito com a cara do outro... 'esse menino sorri demais'",
     },
     {
       year: "2024",
       title: "O primeiro passo",
-      image: "/images/story-2.png",
+      image: "/images/story-2(v2).png",
       description:
         "Numa noite estrelada disseram o primeiro sim.",
     },
     {
       year: "2025",
       title: "O nosso segundo sim",
-      image: "/images/story-3.png",
+      image: "/images/story-3(v2).png",
       description:
         "Do alto de uma serra, o lugar mais importante para ela, com o sol nascendo ao fundo, ela aceitou o seu pedido.",
     },

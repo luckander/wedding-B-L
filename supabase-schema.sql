@@ -29,6 +29,7 @@ create table if not exists public.gift_contributions (
   payment_url text,
   provider_payment_id text,
   paid_at timestamptz,
+  invite_slug text,
   created_at timestamptz not null default now()
 );
 

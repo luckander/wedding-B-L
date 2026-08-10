@@ -31,7 +31,7 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { giftId, giftTitle, donorName, message, amount, paymentMethod } = body;
+    const { giftId, giftTitle, donorName, message, amount, paymentMethod, inviteSlug } = body;
 
     if (!giftId || !donorName) {
       return NextResponse.json({ error: "Dados obrigatorios nao informados." }, { status: 400 });
@@ -46,6 +46,7 @@ export async function POST(request) {
         amount: Number(amount) || 0,
         payment_method: paymentMethod || "Pix",
         payment_status: "pending",
+        invite_slug: inviteSlug ? inviteSlug.trim() : null,
       });
 
       return NextResponse.json({ success: true, contribution });
@@ -67,6 +68,7 @@ export async function POST(request) {
       paymentMethod: paymentMethod || "Pix",
       paymentStatus: "pending",
       date: new Date().toISOString(),
+      inviteSlug: inviteSlug ? inviteSlug.trim() : null,
     };
 
     contributions.push(newContribution);

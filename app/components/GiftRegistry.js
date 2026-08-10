@@ -6,9 +6,22 @@ import { Check, Copy, ExternalLink, Gift, Heart, Minus, Plus, X } from "lucide-r
 import { weddingConfig } from "../config";
 import ScrollReveal from "./ScrollReveal";
 import styles from "./GiftRegistry.module.css";
+import { payload } from "pix-payload";
+import { useParams } from "next/navigation";
 
 export default function GiftRegistry() {
   const { gifts, payment } = weddingConfig;
+
+  const params = useParams();
+  const inviteSlug = params?.slug || "";
+
+  const [toast, setToast] = useState({ show: false, message: "" });
+  const triggerToast = (message) => {
+    setToast({ show: true, message });
+    setTimeout(() => {
+      setToast((prev) => (prev.message === message ? { show: false, message: "" } : prev));
+    }, 3500);
+  };
 
   // Ordena os presentes com base na prioridade atribuída no código
   const sortedGifts = [...gifts].sort((a, b) => (a.priority || 999) - (b.priority || 999));
@@ -68,9 +81,23 @@ export default function GiftRegistry() {
   };
 
   const handleCopyPix = async () => {
-    await navigator.clipboard.writeText(payment.pixKey);
-    setCopiedPix(true);
-    setTimeout(() => setCopiedPix(false), 2500);
+    try {
+      const pixCode = payload({
+        key: "ebaa1212-1747-459e-b390-acc3d0a582dd",
+        name: "Adna Bheatriz Alencar", // max 25 chars
+        city: "ALHANDRA",
+        amount: finalPrice,
+        transactionId: "PresenteCasamento", // no spaces allowed
+      });
+
+      await navigator.clipboard.writeText(pixCode);
+      setCopiedPix(true);
+      triggerToast("Código Pix Copia e Cola copiado com sucesso!");
+      setTimeout(() => setCopiedPix(false), 2500);
+    } catch (error) {
+      console.error("Error generating Pix code:", error);
+      triggerToast("Erro ao gerar o código Pix.");
+    }
   };
 
   const handleOpenModal = (gift) => {
@@ -119,6 +146,7 @@ export default function GiftRegistry() {
           message: donorMessage,
           amount: finalPrice, // ENVIA O VALOR MULTIPLICADO
           paymentMethod: "Pix ou Mercado Pago",
+          inviteSlug: inviteSlug, // Passa o slug do convite
         }),
       });
 
@@ -358,16 +386,16 @@ export default function GiftRegistry() {
                       </div>
 
                       <div className={styles.mpBlock}>
-                        <button
-                          type="button"
+                        <a
+                          href="https://link.mercadopago.com.br/bheatrizelucas"
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className={styles.mpBtn}
-                          onClick={handleMercadoPagoCheckout}
-                          disabled={!donorName.trim() || isCreatingCheckout || !giftQuantity}
                         >
-                          <span>{isCreatingCheckout ? "Criando checkout..." : `Pagar R$ ${finalPrice.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} pelo Mercado Pago`}</span>
+                          <span>Pagar com Cartão (Mercado Pago)</span>
                           <ExternalLink size={16} />
-                        </button>
-                        <span className={styles.mpNote}>Depois do pagamento, clique em confirmar presente.</span>
+                        </a>
+                        <span className={styles.mpNote}>Depois de pagar no site, clique em "Eu dei esse presente" para confirmar.</span>
                       </div>
                     </div>
 
@@ -376,7 +404,7 @@ export default function GiftRegistry() {
                         Cancelar
                       </button>
                       <button type="submit" className={styles.confirmBtn} disabled={isSubmitting || !donorName.trim() || !giftQuantity}>
-                        {isSubmitting ? "Registrando..." : "Confirmar presente"}
+                        {isSubmitting ? "Registrando..." : "Eu dei esse presente"}
                       </button>
                     </div>
                   </form>
@@ -402,6 +430,13 @@ export default function GiftRegistry() {
           </div>
         )}
       </div>
+
+      {toast.show && (
+        <div className={`${styles.toastContainer} ${toast.show ? styles.toastActive : ""}`}>
+          <Check size={18} className={styles.toastIcon} />
+          <span>{toast.message}</span>
+        </div>
+      )}
     </section>
   );
 }

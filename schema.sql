@@ -19,6 +19,7 @@ create table public.gift_contributions (
   payment_url text null,
   provider_payment_id text null,
   paid_at timestamp with time zone null,
+  invite_slug text null,
   created_at timestamp with time zone not null default now(),
   constraint gift_contributions_pkey primary key (id)
 ) TABLESPACE pg_default;
