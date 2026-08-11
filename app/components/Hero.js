@@ -153,10 +153,10 @@ export default function Hero() {
                 Desejamos que aproveitem a festa de forma elegante e leve, por isso, sugerimos para as mulheres vestidos leves, midi/longos ou macacões elegantes.
               </p>
               <p>
-                Já para os homens, sugerimos blazer, camisa social e calça de alfaiataria ou sarja, sem necessidade de terno completo.
+                Já para os homens, camisa social e calça de alfaiataria ou sarja, também podem usar colete ou blazer, sem necessidade do terno completo e nem da gravata.
               </p>
               <p>
-                Também gostaríamos de sugerir sapatos adequados para grama, pois a cerimônia é em local aberto.
+                Também gostaríamos de sugerir sapatos adequados para grama, pois a cerimônia será ao ar livre.
               </p>
               <p>
                 Por fim, reservamos os tons de branco e off-white exclusivamente para a noiva.
