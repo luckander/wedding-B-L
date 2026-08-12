@@ -38,9 +38,9 @@ export default function Gallery() {
   ];
 
   const galleryImages = [
-    { src: "/images/gallery-1.png", alt: "Bheatriz e Lucas - foto 1" },
+    { src: "/images/gallery-1(v2).webp", alt: "Bheatriz e Lucas - foto 1" },
     { src: "/images/gallery-2.png", alt: "Bheatriz e Lucas - foto 2" },
-    { src: "/images/gallery-3.jpg", alt: "Bheatriz e Lucas - foto 3" },
+    { src: "/images/gallery-3(v2).webp", alt: "Bheatriz e Lucas - foto 3" },
     { src: "/images/gallery-4.png", alt: "Bheatriz e Lucas - foto 4" },
   ];
 
