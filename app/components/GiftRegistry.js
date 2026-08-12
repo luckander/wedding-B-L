@@ -264,7 +264,7 @@ export default function GiftRegistry() {
             <h2 className={styles.title}>Presentes simbólicos</h2>
             <div className={styles.divider} />
             <p className={styles.headerText}>
-              Escolha um item da nossa casa para nos presentear. Você poderá finalizar o gesto através de Pix ou pelo Mercado Pago.
+              Se assim desejar, escolha um presente para nos presentear. Você poderá finalizar o gesto através de Pix ou pelo Mercado Pago.
             </p>
           </div>
         </ScrollReveal>
