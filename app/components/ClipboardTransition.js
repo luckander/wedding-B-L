@@ -11,7 +11,7 @@ export default function ClipboardTransition() {
       <ScrollReveal className={styles.clipboardReveal}>
         <div className={styles.clipboardContainer}>
           <Image
-            src="/images/clipboard.png"
+            src="/images/clipboard(v2).webp"
             alt="Elemento decorativo"
             width={800}
             height={745}
