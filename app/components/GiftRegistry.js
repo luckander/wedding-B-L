@@ -299,7 +299,7 @@ export default function GiftRegistry() {
                   {isGiftGiven(gift) && (
                     <div className={styles.givenOverlay}>
                       <Check size={24} />
-                      <span>JÃ¡ presenteado</span>
+                      <span>Já presenteado</span>
                     </div>
                   )}
                 </div>
@@ -316,7 +316,7 @@ export default function GiftRegistry() {
                       disabled={isGiftGiven(gift)}
                     >
                       <Gift size={15} />
-                      <span>{isGiftGiven(gift) ? "JÃ¡ dado" : "Presentear"}</span>
+                      <span>{isGiftGiven(gift) ? "Já dado" : "Presentear"}</span>
                     </button>
                   </div>
                 </div>
