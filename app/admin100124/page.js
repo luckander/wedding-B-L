@@ -267,6 +267,8 @@ export default function AdminMessagesPage() {
 }
 
 function RsvpSection({ title, emptyText, rsvps }) {
+  const groupedRsvps = groupRsvpsByFamily(rsvps);
+
   return (
     <section className={styles.messageSection}>
       <h2>{title}</h2>
@@ -274,23 +276,47 @@ function RsvpSection({ title, emptyText, rsvps }) {
       {rsvps.length === 0 ? (
         <div className={styles.emptyState}>{emptyText}</div>
       ) : (
-        <div className={styles.messageGrid}>
-          {rsvps.map((rsvp) => (
-            <article key={rsvp.id || rsvp.name} className={styles.messageCard}>
-              <div className={styles.messageMeta}>
-                <strong>{rsvp.name || rsvp.guest_name}</strong>
-                <span>{formatDate(rsvp.created_at || rsvp.date)}</span>
+        <div className={styles.familyGrid}>
+          {groupedRsvps.map((family) => (
+            <article key={family.name} className={styles.familyCard}>
+              <div className={styles.familyHeader}>
+                <strong>{family.name}</strong>
+                <span>{family.members.length} {family.members.length === 1 ? "pessoa" : "pessoas"}</span>
               </div>
-              {(rsvp.groupName || rsvp.group_name) && <p>Grupo: {rsvp.groupName || rsvp.group_name}</p>}
-              {rsvp.attending && <p>Quantidade: {rsvp.guestsCount || rsvp.guests_count || 1}</p>}
-              {rsvp.allergies && <p>Observações alimentares: {rsvp.allergies}</p>}
-              {rsvp.message && <p>Mensagem: {rsvp.message}</p>}
+
+              <div className={styles.familyMembers}>
+                {family.members.map((member) => (
+                  <div key={member.id || member.name} className={styles.familyMember}>
+                    <span>{member.name}</span>
+                    {member.allergies && <small>Restricao: {member.allergies}</small>}
+                  </div>
+                ))}
+              </div>
             </article>
           ))}
         </div>
       )}
     </section>
   );
+}
+
+function groupRsvpsByFamily(rsvps) {
+  const groups = new Map();
+
+  rsvps.forEach((rsvp) => {
+    const familyName = rsvp.groupName || rsvp.group_name || "Sem familia";
+    const existingGroup = groups.get(familyName) || { name: familyName, members: [] };
+
+    existingGroup.members.push({
+      id: rsvp.id,
+      name: rsvp.name || rsvp.guest_name,
+      allergies: rsvp.allergies,
+    });
+
+    groups.set(familyName, existingGroup);
+  });
+
+  return Array.from(groups.values()).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 }
 
 function GiftSection({ contributions, busyId, onConfirm, onPending }) {

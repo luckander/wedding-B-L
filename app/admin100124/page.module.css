@@ -174,6 +174,61 @@
   gap: 1rem;
 }
 
+.familyGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.familyCard {
+  padding: 1.15rem;
+  background: var(--white);
+  border: var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.familyHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(111, 142, 174, 0.16);
+  color: var(--sage);
+}
+
+.familyHeader strong {
+  font-size: 1.05rem;
+}
+
+.familyHeader span {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+.familyMembers {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.9rem;
+}
+
+.familyMember {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.familyMember span {
+  color: var(--text-dark);
+  font-weight: 700;
+}
+
+.familyMember small {
+  color: #a95757;
+  line-height: 1.35;
+}
+
 .messageCard {
   padding: 1.25rem;
 }
@@ -245,7 +300,8 @@
   }
 
   .summary,
-  .messageGrid {
+  .messageGrid,
+  .familyGrid {
     grid-template-columns: 1fr;
   }
 }
