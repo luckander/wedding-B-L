@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { AlertCircle, Check, Heart, MessageSquare, Send } from "lucide-react";
+import { useParams } from "next/navigation";
 import ScrollReveal from "./ScrollReveal";
 import styles from "./Guestbook.module.css";
 
 export default function Guestbook() {
+  const params = useParams();
+  const inviteSlug = params?.slug || "";
   const [messages, setMessages] = useState([]);
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
@@ -31,7 +34,7 @@ export default function Guestbook() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!name.trim() || !message.trim()) return;
+    if (!message.trim()) return;
 
     setIsSubmitting(true);
     setSubmitSuccess(false);
@@ -41,7 +44,7 @@ export default function Guestbook() {
       const response = await fetch("/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, message }),
+        body: JSON.stringify({ name, message, inviteSlug }),
       });
 
       if (!response.ok) throw new Error("Could not save message");
@@ -94,16 +97,15 @@ export default function Guestbook() {
 
               <form onSubmit={handleSubmit} className={styles.form}>
                 <label className={styles.inputLabel} htmlFor="guestbook-name">
-                  Seu nome
+                  Seu nome (opcional)
                 </label>
                 <input
                   id="guestbook-name"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   className={styles.textInput}
-                  placeholder="Ex: Ana Maria"
+                  placeholder="Se ficar em branco, usamos o nome da familia"
                   disabled={isSubmitting}
-                  required
                 />
 
                 <label className={styles.inputLabel} htmlFor="guestbook-message">

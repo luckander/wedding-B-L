@@ -209,7 +209,7 @@ export default function GiftRegistry() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: donorName,
-            message: `Presenteou com "${titleWithQuantity}": ${donorMessage}`,
+            message: `Recadinho com presente: ${donorMessage}`,
           }),
         });
       }

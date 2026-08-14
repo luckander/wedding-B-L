@@ -12,6 +12,27 @@ import {
 
 const messagesFilePath = path.join(process.cwd(), "data", "messages.json");
 
+function shuffleMessages(messages) {
+  return [...messages].sort(() => Math.random() - 0.5);
+}
+
+async function resolveMessageName(name, inviteSlug) {
+  const trimmedName = name?.trim();
+  if (trimmedName) return trimmedName;
+
+  const slug = inviteSlug?.trim().toLowerCase();
+  if (slug && hasSupabaseConfig()) {
+    try {
+      const families = await supabaseSelect("families", { filters: { slug: `eq.${slug}` } });
+      if (families?.[0]?.name) return families[0].name;
+    } catch (err) {
+      console.warn("Could not resolve family name for message:", err.message);
+    }
+  }
+
+  return "Familia";
+}
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -26,7 +47,7 @@ export async function GET(request) {
           return NextResponse.json(allMessages);
         }
 
-        return NextResponse.json(allMessages.filter((message) => message.approved));
+        return NextResponse.json(shuffleMessages(allMessages.filter((message) => message.approved)));
       } catch (err) {
         console.warn("Supabase fetch failed, falling back to local JSON:", err.message);
       }
@@ -39,9 +60,7 @@ export async function GET(request) {
       return NextResponse.json(allMessages);
     }
 
-    const approvedMessages = allMessages
-      .filter((message) => message.approved)
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
+    const approvedMessages = shuffleMessages(allMessages.filter((message) => message.approved));
 
     return NextResponse.json(approvedMessages);
   } catch (error) {
@@ -53,16 +72,18 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, message } = body;
+    const { name, message, inviteSlug } = body;
 
-    if (!name || !message) {
-      return NextResponse.json({ error: "Nome e mensagem são obrigatórios." }, { status: 400 });
+    if (!message?.trim()) {
+      return NextResponse.json({ error: "Mensagem obrigatoria." }, { status: 400 });
     }
+
+    const messageName = await resolveMessageName(name, inviteSlug);
 
     if (hasSupabaseConfig()) {
       try {
         const newMessage = await supabaseInsert("messages", {
-          name: name.trim(),
+          name: messageName,
           message: message.trim(),
           approved: false,
         });
@@ -81,7 +102,7 @@ export async function POST(request) {
 
     const newMessage = {
       id: `msg-${Date.now()}`,
-      name: name.trim(),
+      name: messageName,
       message: message.trim(),
       date: new Date().toISOString(),
       approved: false,

@@ -4,7 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 import { Check, Loader2, RefreshCw, Trash2, X } from "lucide-react";
 import styles from "./page.module.css";
 
+const adminSections = [
+  { id: "confirmados", label: "Confirmados" },
+  { id: "nao-virao", label: "Nao virao" },
+  { id: "presentes", label: "Presentes" },
+  { id: "pendentes", label: "Pendentes" },
+  { id: "aprovados", label: "Aprovados" },
+];
+
 export default function AdminMessagesPage() {
+  const [activeSection, setActiveSection] = useState("confirmados");
   const [messages, setMessages] = useState([]);
   const [rsvps, setRsvps] = useState([]);
   const [giftContributions, setGiftContributions] = useState([]);
@@ -34,6 +43,22 @@ export default function AdminMessagesPage() {
 
   useEffect(() => {
     fetchAdminData();
+  }, []);
+
+  useEffect(() => {
+    function syncSectionFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const sectionFromUrl = params.get("secao");
+      setActiveSection(
+        adminSections.some((section) => section.id === sectionFromUrl)
+          ? sectionFromUrl
+          : "confirmados"
+      );
+    }
+
+    syncSectionFromUrl();
+    window.addEventListener("popstate", syncSectionFromUrl);
+    return () => window.removeEventListener("popstate", syncSectionFromUrl);
   }, []);
 
   async function fetchAdminData() {
@@ -107,6 +132,78 @@ export default function AdminMessagesPage() {
     }
   }
 
+  async function updateGiftStatus(id, paymentStatus) {
+    setBusyId(id);
+    setError("");
+
+    try {
+      const response = await fetch("/api/gifts", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, paymentStatus }),
+      });
+
+      if (!response.ok) throw new Error("Nao foi possivel atualizar o presente.");
+      const data = await response.json();
+
+      setGiftContributions((current) =>
+        current.map((contribution) => (contribution.id === id ? data.contribution : contribution))
+      );
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusyId("");
+    }
+  }
+
+  function changeSection(sectionId) {
+    setActiveSection(sectionId);
+    const nextUrl = `${window.location.pathname}?secao=${sectionId}`;
+    window.history.pushState({}, "", nextUrl);
+  }
+
+  function renderActiveSection() {
+    switch (activeSection) {
+      case "nao-virao":
+        return <RsvpSection title="Confirmaram que nao virao" emptyText="Nenhuma recusa registrada." rsvps={declinedRsvps} />;
+      case "presentes":
+        return (
+          <GiftSection
+            contributions={giftContributions}
+            busyId={busyId}
+            onConfirm={(id) => updateGiftStatus(id, "confirmed")}
+            onPending={(id) => updateGiftStatus(id, "pending")}
+          />
+        );
+      case "pendentes":
+        return (
+          <MessageSection
+            title="Pendentes"
+            emptyText="Nenhum recado pendente."
+            messages={pendingMessages}
+            busyId={busyId}
+            onApprove={(id) => updateApproval(id, true)}
+            onHide={(id) => updateApproval(id, false)}
+            onDelete={deleteMessage}
+          />
+        );
+      case "aprovados":
+        return (
+          <MessageSection
+            title="Aprovados"
+            emptyText="Nenhum recado aprovado ainda."
+            messages={approvedMessages}
+            busyId={busyId}
+            onApprove={(id) => updateApproval(id, true)}
+            onHide={(id) => updateApproval(id, false)}
+            onDelete={deleteMessage}
+          />
+        );
+      default:
+        return <RsvpSection title="Confirmaram presenca" emptyText="Nenhuma confirmacao positiva ainda." rsvps={attendingRsvps} />;
+    }
+  }
+
   return (
     <main className={styles.page}>
       <section className={styles.header}>
@@ -147,34 +244,23 @@ export default function AdminMessagesPage() {
         </div>
       </section>
 
+      <nav className={styles.sectionNav} aria-label="Secoes do admin">
+        {adminSections.map((section) => (
+          <button
+            key={section.id}
+            type="button"
+            className={activeSection === section.id ? styles.sectionNavActive : ""}
+            onClick={() => changeSection(section.id)}
+          >
+            {section.label}
+          </button>
+        ))}
+      </nav>
+
       {isLoading ? (
         <div className={styles.emptyState}>Carregando recados...</div>
       ) : (
-        <>
-          <RsvpSection title="Confirmaram presença" emptyText="Nenhuma confirmação positiva ainda." rsvps={attendingRsvps} />
-          <RsvpSection title="Confirmaram que não virão" emptyText="Nenhuma recusa registrada." rsvps={declinedRsvps} />
-          <GiftSection contributions={giftContributions} />
-
-          <MessageSection
-            title="Pendentes"
-            emptyText="Nenhum recado pendente."
-            messages={pendingMessages}
-            busyId={busyId}
-            onApprove={(id) => updateApproval(id, true)}
-            onHide={(id) => updateApproval(id, false)}
-            onDelete={deleteMessage}
-          />
-
-          <MessageSection
-            title="Aprovados"
-            emptyText="Nenhum recado aprovado ainda."
-            messages={approvedMessages}
-            busyId={busyId}
-            onApprove={(id) => updateApproval(id, true)}
-            onHide={(id) => updateApproval(id, false)}
-            onDelete={deleteMessage}
-          />
-        </>
+        renderActiveSection()
       )}
     </main>
   );
@@ -207,7 +293,7 @@ function RsvpSection({ title, emptyText, rsvps }) {
   );
 }
 
-function GiftSection({ contributions }) {
+function GiftSection({ contributions, busyId, onConfirm, onPending }) {
   return (
     <section className={styles.messageSection}>
       <h2>Presentes registrados</h2>
@@ -216,18 +302,50 @@ function GiftSection({ contributions }) {
         <div className={styles.emptyState}>Nenhum presente registrado ainda.</div>
       ) : (
         <div className={styles.messageGrid}>
-          {contributions.map((contribution) => (
-            <article key={contribution.id} className={styles.messageCard}>
-              <div className={styles.messageMeta}>
-                <strong>{contribution.gift_title || contribution.giftTitle}</strong>
-                <span>{formatDate(contribution.created_at || contribution.date)}</span>
-              </div>
-              <p>Dado por: {contribution.donor_name || contribution.donorName}</p>
-              <p>Valor: {formatCurrency(contribution.amount)}</p>
-              <p>Status: {contribution.payment_status || contribution.paymentStatus || "pending"}</p>
-              {contribution.message && <p>Mensagem: {contribution.message}</p>}
-            </article>
-          ))}
+          {contributions.map((contribution) => {
+            const status = contribution.payment_status || contribution.paymentStatus || "pending";
+            const isConfirmed = status === "confirmed";
+
+            return (
+              <article key={contribution.id} className={styles.messageCard}>
+                <div className={styles.messageMeta}>
+                  <strong>{contribution.gift_title || contribution.giftTitle}</strong>
+                  <span>{formatDate(contribution.created_at || contribution.date)}</span>
+                </div>
+                <p>Dado por: {contribution.donor_name || contribution.donorName}</p>
+                <p>Valor: {formatCurrency(contribution.amount)}</p>
+                <p>
+                  Status:{" "}
+                  <span className={isConfirmed ? styles.confirmedStatus : styles.pendingStatus}>
+                    {isConfirmed ? "confirmado" : "pendente"}
+                  </span>
+                </p>
+                {contribution.message && <p>Mensagem: {contribution.message}</p>}
+
+                <div className={styles.actions}>
+                  {!isConfirmed ? (
+                    <button
+                      onClick={() => onConfirm(contribution.id)}
+                      disabled={busyId === contribution.id}
+                      className={styles.approveBtn}
+                    >
+                      <Check size={15} />
+                      <span>Confirmar</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => onPending(contribution.id)}
+                      disabled={busyId === contribution.id}
+                      className={styles.hideBtn}
+                    >
+                      <X size={15} />
+                      <span>Voltar para pendente</span>
+                    </button>
+                  )}
+                </div>
+              </article>
+            );
+          })}
         </div>
       )}
     </section>
