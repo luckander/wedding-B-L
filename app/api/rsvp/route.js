@@ -79,7 +79,7 @@ export async function POST(request) {
 
       if (message?.trim()) {
         await supabaseUpsert("messages", {
-          name: name.trim(),
+          name: groupName?.trim() || name.trim(),
           message: message.trim(),
           approved: false,
         });
@@ -122,7 +122,7 @@ export async function POST(request) {
 
       messages.push({
         id: `msg-${Date.now()}`,
-        name: name.trim(),
+        name: groupName?.trim() || name.trim(),
         message: message.trim(),
         date: new Date().toISOString(),
         approved: false,

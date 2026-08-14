@@ -183,7 +183,7 @@ export default function Rsvp({ inviteSlug }) {
                 </div>
                 <h3 className={styles.successTitle}>Resposta Enviada</h3>
                 <p className={styles.successText}>
-                  Obrigado por responder com carinho. Estamos preparando tudo para viver esse dia com as pessoas que amamos.
+                  Obrigado, {foundGroup?.groupName || "familia"}, por responder com carinho. Estamos preparando tudo para viver esse dia com as pessoas que amamos.
                 </p>
                 <button onClick={handleReset} className={styles.resetBtn}>
                   {inviteSlug ? "Editar resposta" : "Confirmar outro convidado"}
