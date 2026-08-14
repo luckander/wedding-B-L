@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <main className={`${styles.page} intro-boot-page`}>
       <EnvelopeIntro />
-      <Hero />
+      <Hero showPrivateDetails={false} />
       <ClipboardTransition />
       <Gallery />
       <GiftRegistry />

@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Calendar, Clock, ExternalLink, Gift, MapPin, Shirt, Send, X } from "lucide-react";
+import { Calendar, Clock, ExternalLink, Gift, LockKeyhole, MapPin, Shirt, Send, X } from "lucide-react";
 import { weddingConfig } from "../config";
 import Countdown from "./Countdown";
 import styles from "./Hero.module.css";
 
-export default function Hero() {
+export default function Hero({ showPrivateDetails = true }) {
   const { names, event } = weddingConfig;
   const [isDressCodeOpen, setIsDressCodeOpen] = useState(false);
   const weddingDate = new Date(event.date);
@@ -67,34 +67,43 @@ export default function Hero() {
         </p>
 
         <div className={`${styles.detailsGrid} animate-fade-in delay-3`}>
-          <div className={styles.detailItem}>
-            <Calendar size={18} className={styles.detailIcon} />
-            <span className={styles.detailText}>
-              <strong>{formattedDate}</strong>
-            </span>
-          </div>
-          <div className={styles.detailItem}>
-            <Clock size={18} className={styles.detailIcon} />
-            <span className={styles.detailText}>
-              Chegada às <strong>{event.arrivalTime}h</strong> | Cerimônia às <strong>{formattedTime}h</strong>
-            </span>
-          </div>
-          <div className={styles.detailItem}>
-            <MapPin size={18} className={styles.detailIcon} />
-            <span className={styles.detailText}>
-              <strong>{event.venueName}</strong> - {event.venueAddress}
-            </span>
-          </div>
-          <div className={styles.venueLinks}>
-            <a href={event.mapsLink} target="_blank" rel="noopener noreferrer">
-              Google Maps
-              <ExternalLink size={13} />
-            </a>
-            <a href={event.wazeLink} target="_blank" rel="noopener noreferrer">
-              Waze
-              <ExternalLink size={13} />
-            </a>
-          </div>
+          {showPrivateDetails ? (
+            <>
+              <div className={styles.detailItem}>
+                <Calendar size={18} className={styles.detailIcon} />
+                <span className={styles.detailText}>
+                  <strong>{formattedDate}</strong>
+                </span>
+              </div>
+              <div className={styles.detailItem}>
+                <Clock size={18} className={styles.detailIcon} />
+                <span className={styles.detailText}>
+                  <strong>{event.arrivalTime}h</strong>
+                </span>
+              </div>
+              <div className={styles.detailItem}>
+                <MapPin size={18} className={styles.detailIcon} />
+                <span className={styles.detailText}>
+                  <strong>{event.venueName}</strong> - {event.venueAddress}
+                </span>
+              </div>
+              <div className={styles.venueLinks}>
+                <a href={event.mapsLink} target="_blank" rel="noopener noreferrer">
+                  Google Maps
+                  <ExternalLink size={13} />
+                </a>
+                <a href={event.wazeLink} target="_blank" rel="noopener noreferrer">
+                  Waze
+                  <ExternalLink size={13} />
+                </a>
+              </div>
+            </>
+          ) : (
+            <div className={styles.privateNotice}>
+              <LockKeyhole size={18} className={styles.detailIcon} />
+              <span>Acesse seu link pessoal para ver data, horario de chegada e local.</span>
+            </div>
+          )}
           <div className={styles.detailItem}>
             <Shirt size={18} className={styles.detailIcon} />
             <span className={styles.detailText}>
@@ -111,8 +120,14 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="animate-fade-in delay-4">
+        <div className={`${styles.countdownWrapper} ${!showPrivateDetails ? styles.countdownLocked : ""} animate-fade-in delay-4`}>
           <Countdown />
+          {!showPrivateDetails && (
+            <div className={styles.countdownLockMessage}>
+              <LockKeyhole size={16} />
+              <span>Use seu link pessoal para liberar a contagem.</span>
+            </div>
+          )}
         </div>
 
         <div className={`${styles.actions} animate-fade-in delay-4`}>

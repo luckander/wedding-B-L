@@ -13,7 +13,7 @@ export default async function InvitePage({ params }) {
   return (
     <main className={`${styles.page} intro-boot-page`}>
       <EnvelopeIntro />
-      <Hero />
+      <Hero showPrivateDetails />
       <ClipboardTransition />
       <Gallery />
       <GiftRegistry />

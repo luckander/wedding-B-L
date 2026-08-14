@@ -7,7 +7,7 @@ export const weddingConfig = {
   },
   event: {
     date: "2026-09-13T14:30:00-03:00",
-    arrivalTime: "14:20",
+    arrivalTime: "14:00",
     venueName: "Haras Pôr do Sol",
     venueAddress: "Cabedelo - PB",
     mapsLink: "https://www.google.com/maps/search/?api=1&query=Haras%20Por%20do%20Sol%20Cabedelo%20PB",
