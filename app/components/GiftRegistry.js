@@ -10,7 +10,7 @@ import { useParams } from "next/navigation";
 
 // ---------------------------------------------------------------------------
 // PIX Payload Generator (BACEN spec, CRC-16/CCITT-FALSE)
-// ---------------------------------------------------------------------------
+// -----------------------------------------------simb---------------------------
 function crc16(payload) {
   let crc = 0xffff;
   for (let i = 0; i < payload.length; i++) {
@@ -264,7 +264,7 @@ export default function GiftRegistry() {
             <h2 className={styles.title}>Presentes simbólicos</h2>
             <div className={styles.divider} />
             <p className={styles.headerText}>
-              Se assim desejar, escolha um presente para nos presentear. Você poderá finalizar o gesto através de Pix ou pelo Mercado Pago.
+              Sua presença é nosso maior presente! Mas, se assim desejar, escolha um presente para nos presentear. Você poderá finalizar o gesto através de Pix ou pelo Mercado Pago e nos enviar um recadinho junto a ele.
             </p>
           </div>
         </ScrollReveal>
