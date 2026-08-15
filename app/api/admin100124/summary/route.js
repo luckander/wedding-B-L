@@ -19,10 +19,10 @@ export async function GET() {
       ]);
 
       const rsvps = guests
-        .filter((guest) => guest.attending !== null)
         .map((guest) => ({
           id: guest.id,
           name: guest.name,
+          familyId: guest.family_id || guest.families?.id || "",
           groupName: guest.families?.name || "",
           attending: guest.attending,
           allergies: guest.allergies || "",

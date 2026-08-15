@@ -7,9 +7,10 @@ import styles from "./page.module.css";
 const adminSections = [
   { id: "confirmados", label: "Confirmados" },
   { id: "nao-virao", label: "Nao virao" },
+  { id: "rsvp-pendentes", label: "RSVP pendentes" },
   { id: "presentes", label: "Presentes" },
-  { id: "pendentes", label: "Pendentes" },
-  { id: "aprovados", label: "Aprovados" },
+  { id: "recados-pendentes", label: "Recados pendentes" },
+  { id: "recados-aprovados", label: "Recados aprovados" },
 ];
 
 export default function AdminMessagesPage() {
@@ -37,7 +38,12 @@ export default function AdminMessagesPage() {
   );
 
   const declinedRsvps = useMemo(
-    () => rsvps.filter((rsvp) => !rsvp.attending),
+    () => rsvps.filter((rsvp) => rsvp.attending === false),
+    [rsvps]
+  );
+
+  const pendingRsvps = useMemo(
+    () => rsvps.filter((rsvp) => rsvp.attending === null || rsvp.attending === undefined),
     [rsvps]
   );
 
@@ -166,6 +172,8 @@ export default function AdminMessagesPage() {
     switch (activeSection) {
       case "nao-virao":
         return <RsvpSection title="Confirmaram que nao virao" emptyText="Nenhuma recusa registrada." rsvps={declinedRsvps} />;
+      case "rsvp-pendentes":
+        return <RsvpSection title="Pendentes de RSVP" emptyText="Nenhum RSVP pendente." rsvps={pendingRsvps} />;
       case "presentes":
         return (
           <GiftSection
@@ -175,10 +183,10 @@ export default function AdminMessagesPage() {
             onPending={(id) => updateGiftStatus(id, "pending")}
           />
         );
-      case "pendentes":
+      case "recados-pendentes":
         return (
           <MessageSection
-            title="Pendentes"
+            title="Recados pendentes"
             emptyText="Nenhum recado pendente."
             messages={pendingMessages}
             busyId={busyId}
@@ -187,10 +195,10 @@ export default function AdminMessagesPage() {
             onDelete={deleteMessage}
           />
         );
-      case "aprovados":
+      case "recados-aprovados":
         return (
           <MessageSection
-            title="Aprovados"
+            title="Recados aprovados"
             emptyText="Nenhum recado aprovado ainda."
             messages={approvedMessages}
             busyId={busyId}
@@ -224,11 +232,11 @@ export default function AdminMessagesPage() {
       <section className={styles.summary}>
         <div>
           <strong>{pendingMessages.length}</strong>
-          <span>Pendentes</span>
+          <span>Recados pendentes</span>
         </div>
         <div>
           <strong>{approvedMessages.length}</strong>
-          <span>Aprovados</span>
+          <span>Recados aprovados</span>
         </div>
         <div>
           <strong>{attendingRsvps.length}</strong>
@@ -237,6 +245,10 @@ export default function AdminMessagesPage() {
         <div>
           <strong>{declinedRsvps.length}</strong>
           <span>Não virão</span>
+        </div>
+        <div>
+          <strong>{pendingRsvps.length}</strong>
+          <span>RSVP pendentes</span>
         </div>
         <div>
           <strong>{giftContributions.length}</strong>
@@ -278,7 +290,7 @@ function RsvpSection({ title, emptyText, rsvps }) {
       ) : (
         <div className={styles.familyGrid}>
           {groupedRsvps.map((family) => (
-            <article key={family.name} className={styles.familyCard}>
+            <article key={family.id} className={styles.familyCard}>
               <div className={styles.familyHeader}>
                 <strong>{family.name}</strong>
                 <span>{family.members.length} {family.members.length === 1 ? "pessoa" : "pessoas"}</span>
@@ -305,7 +317,8 @@ function groupRsvpsByFamily(rsvps) {
 
   rsvps.forEach((rsvp) => {
     const familyName = rsvp.groupName || rsvp.group_name || "Sem familia";
-    const existingGroup = groups.get(familyName) || { name: familyName, members: [] };
+    const familyId = rsvp.familyId || rsvp.family_id || `family-name:${familyName}`;
+    const existingGroup = groups.get(familyId) || { id: familyId, name: familyName, members: [] };
 
     existingGroup.members.push({
       id: rsvp.id,
@@ -313,7 +326,7 @@ function groupRsvpsByFamily(rsvps) {
       allergies: rsvp.allergies,
     });
 
-    groups.set(familyName, existingGroup);
+    groups.set(familyId, existingGroup);
   });
 
   return Array.from(groups.values()).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
