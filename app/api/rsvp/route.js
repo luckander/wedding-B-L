@@ -1,11 +1,65 @@
 import fs from "fs/promises";
 import path from "path";
+import crypto from "crypto";
 import { NextResponse } from "next/server";
 import { weddingConfig } from "../../config";
 import { hasSupabaseConfig, supabaseSelect, supabaseUpdate, supabaseUpsert } from "../../lib/supabaseServer";
 
 const rsvpsFilePath = path.join(process.cwd(), "data", "rsvps.json");
 const messagesFilePath = path.join(process.cwd(), "data", "messages.json");
+
+function stableUuidFromText(text) {
+  const hash = crypto.createHash("sha256").update(text).digest("hex");
+  return `${hash.slice(0, 8)}-${hash.slice(8, 12)}-4${hash.slice(13, 16)}-${((parseInt(hash.slice(16, 18), 16) & 0x3f) | 0x80).toString(16)}${hash.slice(18, 20)}-${hash.slice(20, 32)}`;
+}
+
+function slugify(text) {
+  return text
+    .toString()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/--+/g, "-")
+    .trim();
+}
+
+async function saveSupabaseRsvpMessage(name, message, familyId) {
+  const messageName = name.trim();
+  const messageText = message.trim();
+  const messageId = stableUuidFromText(`rsvp:${familyId || messageName.toLowerCase()}`);
+
+  return supabaseUpsert("messages", {
+    id: messageId,
+    name: messageName,
+    message: messageText,
+    approved: false,
+  });
+}
+
+function upsertLocalRsvpMessage(messages, name, message) {
+  const messageName = name.trim();
+  const messageText = message.trim();
+  const messageId = `rsvp-msg-${slugify(messageName)}`;
+
+  const existingIndex = messages.findIndex((item) => item.id === messageId);
+  const nextMessage = {
+    id: messageId,
+    name: messageName,
+    message: messageText,
+    date: new Date().toISOString(),
+    approved: false,
+  };
+
+  if (existingIndex !== -1) {
+    messages[existingIndex] = nextMessage;
+    return messages;
+  }
+
+  messages.push(nextMessage);
+  return messages;
+}
 
 export async function GET() {
   try {
@@ -47,7 +101,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { id, name, groupName, attending, guestsCount, companions, allergies, message } = body;
+    const { id, familyId, name, groupName, attending, guestsCount, companions, allergies, message } = body;
 
     if (!name) {
       return NextResponse.json({ error: "O nome e obrigatorio." }, { status: 400 });
@@ -78,11 +132,7 @@ export async function POST(request) {
       }
 
       if (message?.trim()) {
-        await supabaseUpsert("messages", {
-          name: groupName?.trim() || name.trim(),
-          message: message.trim(),
-          approved: false,
-        });
+        await saveSupabaseRsvpMessage(groupName?.trim() || name.trim(), message, familyId);
       }
 
       return NextResponse.json({ success: true, rsvp: updatedGuest });
@@ -120,13 +170,7 @@ export async function POST(request) {
         messages = JSON.parse(data);
       } catch {}
 
-      messages.push({
-        id: `msg-${Date.now()}`,
-        name: groupName?.trim() || name.trim(),
-        message: message.trim(),
-        date: new Date().toISOString(),
-        approved: false,
-      });
+      messages = upsertLocalRsvpMessage(messages, groupName?.trim() || name.trim(), message);
 
       await fs.writeFile(messagesFilePath, JSON.stringify(messages, null, 2), "utf8");
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AlertCircle, Check, Heart, Search, User, Loader2 } from "lucide-react";
 import { CornerLeaves } from "./Decorations";
 import ScrollReveal from "./ScrollReveal";
@@ -15,6 +15,7 @@ export default function Rsvp({ inviteSlug }) {
   const [allergies, setAllergies] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
   const [isLoadingSlug, setIsLoadingSlug] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
 
@@ -27,7 +28,7 @@ export default function Rsvp({ inviteSlug }) {
         .then((data) => {
           if (data.success && data.found) {
             const members = data.members.map((m) => m.name);
-            setFoundGroup({ groupName: data.family.name, members });
+            setFoundGroup({ id: data.family.id, groupName: data.family.name, members });
 
             const ids = {};
             const selected = {};
@@ -68,7 +69,7 @@ export default function Rsvp({ inviteSlug }) {
 
       if (data.success && data.found) {
         const members = data.members.map((m) => m.name);
-        setFoundGroup({ groupName: data.family.name, members });
+        setFoundGroup({ id: data.family.id, groupName: data.family.name, members });
 
         const ids = {};
         const selected = {};
@@ -104,6 +105,8 @@ export default function Rsvp({ inviteSlug }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
     setSubmitStatus(null);
 
@@ -117,6 +120,7 @@ export default function Rsvp({ inviteSlug }) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               id: guestIds[member],
+              familyId: foundGroup.id,
               name: member,
               groupName: foundGroup.groupName,
               attending,
@@ -134,6 +138,7 @@ export default function Rsvp({ inviteSlug }) {
       console.error(error);
       setSubmitStatus("error");
     } finally {
+      isSubmittingRef.current = false;
       setIsSubmitting(false);
     }
   };

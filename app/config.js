@@ -58,7 +58,7 @@ export const weddingConfig = {
     {
       id: "microondas",
       title: "Forno Micro-ondas",
-      price: 650,
+      price: 450,
       image: "/images/gifts/microondas.png",
       category: "Cozinha",
       priority: 4,
