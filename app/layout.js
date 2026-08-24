@@ -18,10 +18,15 @@ export const metadata = {
   description:
     "Convidamos você para celebrar conosco o casamento de Bheatriz e Lucas em 13 de setembro de 2026.",
   keywords: "casamento, Bheatriz e Lucas, RSVP, lista de presentes",
+  manifest: "/site.webmanifest",
   icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
 };
 

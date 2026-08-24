@@ -20,10 +20,13 @@ export const weddingConfig = {
     },
   },
   payment: {
-    pixKey: "ebaa1212-1747-459e-b390-acc3d0a582dd",
-    pixHolder: "Adna Bheatriz de Oliveira Alencar",
-    bank: "Banco do Brasil",
-    mercadoPagoLink: "https://www.mercadopago.com.br/",
+    pixKey: process.env.NEXT_PUBLIC_PAYMENT_PIX_KEY || "",
+    pixHolder: process.env.NEXT_PUBLIC_PAYMENT_PIX_HOLDER || "",
+    bank: process.env.NEXT_PUBLIC_PAYMENT_BANK || "",
+    mercadoPagoLink:
+      process.env.NEXT_PUBLIC_MERCADO_PAGO_LINK ||
+      process.env.NEXT_PUBLIC_MERCADO_PAGO_FALLBACK_LINK ||
+      "",
   },
   admin: {
     password: process.env.ADMIN_PASSWORD || "casamento2026",

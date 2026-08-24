@@ -440,10 +440,11 @@ export default function GiftRegistry() {
 
                       <div className={styles.mpBlock}>
                         <a
-                          href="https://link.mercadopago.com.br/bheatrizelucas"
+                          href={payment.mercadoPagoLink || "#"}
                           target="_blank"
                           rel="noopener noreferrer"
                           className={styles.mpBtn}
+                          aria-disabled={!payment.mercadoPagoLink}
                         >
                           <span>Pagar com Cartão (Mercado Pago)</span>
                           <ExternalLink size={16} />

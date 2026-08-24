@@ -3,7 +3,10 @@ import { NextResponse } from "next/server";
 export async function POST(request) {
   try {
     const token = process.env.MERCADO_PAGO_ACCESS_TOKEN;
-    const fallbackLink = process.env.NEXT_PUBLIC_MERCADO_PAGO_FALLBACK_LINK || "https://www.mercadopago.com.br/";
+    const fallbackLink =
+      process.env.NEXT_PUBLIC_MERCADO_PAGO_LINK ||
+      process.env.NEXT_PUBLIC_MERCADO_PAGO_FALLBACK_LINK ||
+      "https://www.mercadopago.com.br/";
     const { title, amount, donorName } = await request.json();
 
     if (!token) {
